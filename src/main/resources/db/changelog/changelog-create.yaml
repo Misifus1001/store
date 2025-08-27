@@ -1,0 +1,120 @@
+databaseChangeLog:
+  - changeSet:
+      id: 24-04-2025_19:26
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE etapa (
+              id SERIAL PRIMARY KEY,
+              etapa VARCHAR(40) NOT NULL,
+              descripcion VARCHAR(140) NOT NULL,
+              estatus BOOLEAN NOT NULL,
+              fecha_creacion TIMESTAMP NOT NULL
+            );
+
+  - changeSet:
+      id: 24-04-2025_19:22
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE tienda (
+              id SERIAL PRIMARY KEY,
+              nombre VARCHAR(40) NOT NULL,
+              ubicacion VARCHAR(255) NOT NULL,
+              estatus BOOLEAN NOT NULL,
+              fecha_creacion TIMESTAMP NOT NULL
+            );
+
+  - changeSet:
+      id: 24-04-2025_19:21
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE rol (
+              id SERIAL PRIMARY KEY,
+              nombre VARCHAR(40) NOT NULL,
+              descripcion VARCHAR(140) NOT NULL,
+              estatus BOOLEAN NOT NULL,
+              fecha_creacion TIMESTAMP NOT NULL
+            );
+
+  - changeSet:
+      id: 24-04-2025_19:20
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE usuario (
+              id SERIAL PRIMARY KEY,
+              nombre VARCHAR(50) NOT NULL,
+              email VARCHAR(50) NOT NULL,
+              password VARCHAR(255) NOT NULL,
+              estatus BOOLEAN NOT NULL,
+              fecha_creacion TIMESTAMP NOT NULL,
+              fk_rol INTEGER NOT NULL,
+              fk_tienda INTEGER NOT NULL,
+              FOREIGN KEY (fk_rol) REFERENCES rol(id),
+              FOREIGN KEY (fk_tienda) REFERENCES tienda(id)
+            );
+
+  - changeSet:
+      id: 24-04-2025_19:23
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE producto (
+              id SERIAL PRIMARY KEY,
+              codigo_barras VARCHAR(20) NOT NULL,
+              descripcion VARCHAR(50) NOT NULL,
+              precio NUMERIC(8,2) NOT NULL,
+              stock INTEGER NOT NULL,
+              url_imagen VARCHAR(140) NOT NULL,
+              estatus BOOLEAN NOT NULL,
+              fecha_creacion TIMESTAMP NOT NULL,
+              fk_tienda INTEGER NOT NULL,
+              FOREIGN KEY (fk_tienda) REFERENCES tienda(id)
+            );
+  - changeSet:
+      id: 24-04-2025_19:25
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE carrito (
+              id SERIAL PRIMARY KEY,
+              fk_etapa INTEGER NOT NULL,
+              fk_venta INTEGER NOT NULL,
+              estatus BOOLEAN NOT NULL,
+              fecha_creacion TIMESTAMP NOT NULL,
+              FOREIGN KEY (fk_etapa) REFERENCES etapa(id)
+            );
+  - changeSet:
+      id: 24-04-2025_19:27
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE ventas (
+              id SERIAL PRIMARY KEY,
+              fecha_venta TIMESTAMP NOT NULL,
+              codigo_barras_producto VARCHAR(20) NOT NULL,
+              descripcion_producto VARCHAR(50) NOT NULL,
+              precio_producto NUMERIC(8,2) NOT NULL,
+              stock_anterior INTEGER NOT NULL,
+              stock_nuevo INTEGER NOT NULL,
+              total_pagado NUMERIC(8,2) NOT NULL,
+              fk_carrito INTEGER NOT NULL,
+              FOREIGN KEY (fk_carrito) REFERENCES carrito(id)
+            );
+  - changeSet:
+      id: 24-04-2025_19:24
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE producto_carrito (
+              id SERIAL PRIMARY KEY,
+              cantidad INTEGER NOT NULL,
+              fk_carrito INTEGER NOT NULL,
+              fk_producto INTEGER NOT NULL,
+              estatus BOOLEAN NOT NULL,
+              fecha_creacion TIMESTAMP NOT NULL,
+              FOREIGN KEY (fk_carrito) REFERENCES carrito(id),
+              FOREIGN KEY (fk_producto) REFERENCES producto(id)
+            );
