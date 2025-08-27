@@ -25,7 +25,7 @@ public class Usuario {
     private String nombre;
     private String email;
     private String password;
-    private String descripcion;
+    // private String descripcion;
     private Boolean estatus;
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
