@@ -9,7 +9,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.migramer.store.entities.User;
+import com.migramer.store.entities.Usuario;
 import com.migramer.store.repository.UserRepository;
 import com.migramer.store.service.JwtService;
 
@@ -46,18 +46,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            User user = userRepository.findByEmail(email).orElse(null);
+            Usuario usuario = userRepository.findByEmail(email).orElse(null);
 
-            if (user != null && jwtService.isTokenValid(jwt, email)) {
-
+            if (usuario != null && jwtService.isTokenValid(jwt, email)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    user, 
+                    usuario, 
                     null, 
                     null);
-                
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                
             }
         }
 

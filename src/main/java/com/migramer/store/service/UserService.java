@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.migramer.store.entities.User;
+import com.migramer.store.entities.Usuario;
 import com.migramer.store.models.UserDto;
 import com.migramer.store.repository.UserRepository;
 
@@ -26,37 +26,32 @@ public class UserService {
 
     @Transactional
     public void guardarUsuario(UserDto userDto){
-        User user = new User();
-        user.setEmail(userDto.getCorreo());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setName(userDto.getNombre());
-        user.setActive(true);
-        userRepository.save(user);
+        Usuario usuario = new Usuario();
+        usuario.setEmail(userDto.getCorreo());
+        usuario.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        usuario.setNombre(userDto.getNombre());
+        usuario.setEstatus(true);
+        usuario.setFechaCreacion(java.time.LocalDateTime.now());
+        // Si necesitas asignar rol o tienda, hazlo aquí
+        userRepository.save(usuario);
     }
 
     public String registrarUsuario(UserDto userDto){
-
         guardarUsuario(userDto);
-
         Map<String, Object> claims = new HashMap<>();
-        claims.put("name", userDto.getNombre());
-
+        claims.put("nombre", userDto.getNombre());
         return jwtService.generateToken(userDto.getCorreo(), claims);
     }
 
-    public User getUserByEmail(String email){
-        User user = userRepository.findByEmail(email).get();
-        return user;
+    public Usuario getUsuarioByEmail(String email){
+        return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
     public String validarUsuario(String email, String password){
-
-        User user = getUserByEmail(email);
-
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        Usuario usuario = getUsuarioByEmail(email);
+        if (!passwordEncoder.matches(password, usuario.getPassword())) {
             throw new RuntimeException("Credenciales invalidas");
         }
-        return jwtService.generateToken(user.getEmail(), Map.of("name", user.getName()));
+        return jwtService.generateToken(usuario.getEmail(), Map.of("nombre", usuario.getNombre()));
     }
-    
 }
