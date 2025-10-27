@@ -70,8 +70,8 @@ public class ProductosService {
 
     }
 
-    public PaginacionResponse probarVisualizacion(Integer idTienda, Integer page, Integer size){
-        return getProductsByPageAndTienda(idTienda, page, size);
+    public PaginacionResponse probarVisualizacion(String uuidTienda, Integer page, Integer size){
+        return getProductsByPageAndTienda(uuidTienda, page, size);
 
     }
 
@@ -104,11 +104,11 @@ public class ProductosService {
         return producto;
     }
 
-    public PaginacionResponse getProductsByPageAndTienda(Integer idTienda, Integer page, Integer size) {
+    public PaginacionResponse getProductsByPageAndTienda(String uuidTienda, Integer page, Integer size) {
 
         try {
 
-            Tienda tienda = tiendaService.getTiendaEntityById(idTienda);
+            Tienda tienda = tiendaService.getTiendaEntityByUUID(uuidTienda);
 
             PaginacionResponse paginacionResponse = new PaginacionResponse();
 

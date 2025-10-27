@@ -22,6 +22,7 @@ public class Tienda {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String uuid;
     private String nombre;
     private String ubicacion;
     private Boolean estatus;

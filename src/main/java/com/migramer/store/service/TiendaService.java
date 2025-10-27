@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class TiendaService {
         logger.info("Entrando: save()");
         logger.info("TiendaDto: {}",tiendaDto);
         Tienda tienda = new Tienda();
-
+        tienda.setUuid(UUID.randomUUID().toString());
         tienda.setEstatus(true);
         tienda.setFechaCreacion(LocalDateTime.now());
         tienda.setNombre(tiendaDto.getNombre());
@@ -90,6 +91,16 @@ public class TiendaService {
         logger.info("Saliendo: getTiendaEntityById()");
 
         return tienda.get();
+    }
+
+    public Tienda getTiendaEntityByUUID(String uuidTienda){
+
+        logger.info("Entrando: getTiendaEntityByUUID()");
+
+        Tienda tienda = tiendaRepository.findByUuid(uuidTienda);
+        logger.info("Saliendo: getTiendaEntityByUUID()");
+
+        return tienda;
     }
 
 

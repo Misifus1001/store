@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2025-07-05-alter-tienda
+      author: roberto.cruz
+      changes:
+        - sql:
+            ALTER TABLE tienda
+            ADD COLUMN uuid VARCHAR(255);
