@@ -2,6 +2,7 @@ package com.migramer.store.entities;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,11 +26,11 @@ public class ProductoCarrito {
     private Integer cantidad;
     private Boolean estatus;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "fk_carrito")
     private Carrito carritoForProductoCarrito;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "fk_producto")
     private Producto productoForProductoCarrito;
 

@@ -118,3 +118,16 @@ databaseChangeLog:
               FOREIGN KEY (fk_carrito) REFERENCES carrito(id),
               FOREIGN KEY (fk_producto) REFERENCES producto(id)
             );
+  - changeSet:
+      id: 24-10-2025_12:39
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE users(
+              id SERIAL PRIMARY KEY,
+              name VARCHAR(40) NOT NULL,
+              email VARCHAR(140) NOT NULL,
+              password VARCHAR(255) NOT NULL,
+              fecha_creacion TIMESTAMP NOT NULL,
+              activo BOOLEAN NOT NULL
+            );

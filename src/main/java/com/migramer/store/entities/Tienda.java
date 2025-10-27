@@ -3,6 +3,7 @@ package com.migramer.store.entities;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,10 +29,10 @@ public class Tienda {
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
-    @OneToMany(mappedBy = "tiendaForProducto", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "tiendaForProducto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Producto> productoList;
 
-    @OneToMany(mappedBy = "tiendaForUsuario", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "tiendaForUsuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Usuario> usuarioList;
     
 }

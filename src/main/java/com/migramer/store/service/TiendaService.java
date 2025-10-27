@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.migramer.store.entities.Tienda;
@@ -70,7 +72,7 @@ public class TiendaService {
     public TiendaDto getTiendaById(Integer id){
 
         TiendaDto tiendaDto = new TiendaDto();
-        Optional <Tienda> tienda = tiendaRepository.findById(id);
+        Optional<Tienda> tienda = tiendaRepository.findById(id);
 
         if (tienda.isPresent()) {
             tiendaDto = tiendaEntityToTiendaDto(tienda.get());
@@ -79,5 +81,32 @@ public class TiendaService {
         return tiendaDto;
     }
 
+    public Tienda getTiendaEntityById(Integer id){
+
+        logger.info("Entrando: getTiendaEntityById()");
+
+        Optional<Tienda> tienda = tiendaRepository.findById(id);
+
+        logger.info("Saliendo: getTiendaEntityById()");
+
+        return tienda.get();
+    }
+
+
+    // @EventListener(ApplicationReadyEvent.class)
+    // public void probar(){
+
+    //     List<TiendaDto> tiendaDtoList = getTiendasDto();
+
+    //     if (tiendaDtoList.isEmpty()) {
+            
+    //         for (TiendaDto tiendaDto : tiendaDtoList) {
+    //             logger.info(tiendaDto.getNombre());
+    //             logger.info(tiendaDto.getUbicacion());
+    //         }
+    //     }
+
+
+    // }
     
 }

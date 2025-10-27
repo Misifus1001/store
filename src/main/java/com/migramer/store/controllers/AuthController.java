@@ -33,11 +33,11 @@ public class AuthController {
         String token = userService.registrarUsuario(userDto);
         tokenResponse.setToken(token);
 
-        responseGenerico.setEstatus(HttpStatus.CREATED.getReasonPhrase());
-        responseGenerico.setMessage(String.valueOf(HttpStatus.CREATED.value()));
+        // responseGenerico.setEstatus(HttpStatus.CREATED.getReasonPhrase());
+        // responseGenerico.setMessage(String.valueOf(HttpStatus.CREATED.value()));
         responseGenerico.setData(tokenResponse);
 
-        return ResponseEntity.status(HttpStatus.valueOf(responseGenerico.getEstatus())).body(responseGenerico);
+        return ResponseEntity.status(200).body(responseGenerico);
 
     }
 

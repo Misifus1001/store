@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,11 +37,11 @@ public class Producto {
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
-    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "fk_tienda", nullable =  true, updatable = true)
     private Tienda tiendaForProducto;
 
-    @OneToMany(mappedBy = "productoForProductoCarrito", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "productoForProductoCarrito", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProductoCarrito> productoCarritoList;
     
 }

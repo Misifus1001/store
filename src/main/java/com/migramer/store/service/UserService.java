@@ -1,5 +1,6 @@
 package com.migramer.store.service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,9 +29,10 @@ public class UserService {
     public void guardarUsuario(UserDto userDto){
         User user = new User();
         user.setEmail(userDto.getCorreo());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setName(userDto.getNombre());
-        user.setActive(true);
+        user.setFechaCreacion(LocalDateTime.now());
+        user.setActivo(true);
         userRepository.save(user);
     }
 
