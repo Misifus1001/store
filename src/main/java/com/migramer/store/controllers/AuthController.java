@@ -8,17 +8,18 @@ import com.migramer.store.models.UserDto;
 import com.migramer.store.service.UserService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
 public class AuthController {
-    private final UserService userService;
+
+    @Autowired 
+    private UserService userService;
 
     @PostMapping("/registrarUsuario")
     public ResponseEntity<TokenResponse> registrarUsuario(@Valid @RequestBody UserDto userDto) {
