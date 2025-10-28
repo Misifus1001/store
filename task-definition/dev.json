@@ -1,0 +1,41 @@
+{
+    "family": "store-dev",
+    "executionRoleArn": "arn:aws:iam::590184125804:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+      {
+        "name": "store-dev-task",
+        "image": "590184125804.dkr.ecr.us-east-1.amazonaws.com/store-dev:latest",
+        "essential": true,
+        "portMappings": [
+          {
+            "name": "store-dev-8080",
+            "containerPort": 8080,
+            "hostPort": 8080,
+            "protocol": "tcp",
+            "appProtocol": "http"
+          }
+        ],
+        "environment": [
+          {
+            "name": "SPRING_PROFILES_ACTIVE",
+            "value": "dev"
+          }
+        ],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/store-dev",
+            "awslogs-create-group": "true",
+            "awslogs-region": "us-east-1",
+            "awslogs-stream-prefix": "ecs"
+          }
+        }
+      }
+    ],
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "1024",
+    "memory": "3072",
+    "volumes": []
+  }
+  
