@@ -20,7 +20,8 @@ public class EmailProviderController {
 
     @PostMapping("/send-email")
     public ResponseEntity<EmailResponse> sendemail(@RequestBody EmailRequest emailRequest) {
-        EmailResponse emailResponse = emailProvider.sendEmail(emailRequest);
+        EmailResponse emailResponse = emailProvider.sendImageEmail(emailRequest);
+        // EmailResponse emailResponse = emailProvider.sendEmail(emailRequest);
         return ResponseEntity.ok(emailResponse);
     }
 
