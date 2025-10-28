@@ -28,8 +28,8 @@ public class ProductosService {
 
     private final Logger logger = LoggerFactory.getLogger(ProductosService.class);
 
-    public ProductoDto saveProductoDto(ProductoDto productoDto, Integer idTienda) {
-        Tienda tienda = tiendaService.getTiendaEntityById(idTienda);
+    public ProductoDto saveProductoDto(ProductoDto productoDto) {
+        Tienda tienda = tiendaService.getTiendaEntityByUUID(productoDto.getUuidTienda());
         Producto producto = save(productoDto, tienda);
         return productoToProductoDto(producto);
     }
@@ -98,6 +98,7 @@ public class ProductosService {
         productoDto.setPrecio(producto.getPrecio());
         productoDto.setStock(producto.getStock());
         productoDto.setUrlImagen(producto.getUrlImagen());
+        productoDto.setUuidTienda(producto.getTiendaForProducto().getUuid());
 
         return productoDto;
     }
