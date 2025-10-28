@@ -100,24 +100,11 @@ public class TiendaService {
         Tienda tienda = tiendaRepository.findByUuid(uuidTienda);
         logger.info("Saliendo: getTiendaEntityByUUID()");
 
+        if (tienda == null) {
+            throw new RuntimeException("Tienda inexistente");
+        }
+
         return tienda;
     }
 
-
-    // @EventListener(ApplicationReadyEvent.class)
-    // public void probar(){
-
-    //     List<TiendaDto> tiendaDtoList = getTiendasDto();
-
-    //     if (tiendaDtoList.isEmpty()) {
-            
-    //         for (TiendaDto tiendaDto : tiendaDtoList) {
-    //             logger.info(tiendaDto.getNombre());
-    //             logger.info(tiendaDto.getUbicacion());
-    //         }
-    //     }
-
-
-    // }
-    
 }

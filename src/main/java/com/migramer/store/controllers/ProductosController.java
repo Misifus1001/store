@@ -1,7 +1,5 @@
 package com.migramer.store.controllers;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,18 +17,11 @@ public class ProductosController {
     private ProductosService productosService;
 
     @GetMapping
-    public String getMethodName() {
-
-        // productosService.probarGuardado();
-        return UUID.randomUUID().toString();
-    }
-
-    @GetMapping("/search")
     public PaginacionResponse getProductsByTienda(
             @RequestParam String uuidTienda,
             @RequestParam(required = false, defaultValue = "0") Integer page, 
             @RequestParam(required = false, defaultValue = "5") Integer size) {
-        return productosService.probarVisualizacion(uuidTienda, page, size);
+        return productosService.getProductsByPageAndTienda(uuidTienda, page, size);
     }
 
 }
