@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.migramer.store.entities.User;
+import com.migramer.store.models.TokenRequest;
+import com.migramer.store.models.TokenResponse;
 import com.migramer.store.models.UserDto;
 import com.migramer.store.repository.UserRepository;
 
@@ -36,14 +38,14 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public String registrarUsuario(UserDto userDto){
+    public TokenResponse registrarUsuario(UserDto userDto){
 
         guardarUsuario(userDto);
-
         Map<String, Object> claims = new HashMap<>();
         claims.put("name", userDto.getNombre());
-
-        return jwtService.generateToken(userDto.getCorreo(), claims);
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken(jwtService.generateToken(userDto.getCorreo(), claims));
+        return tokenResponse;
     }
 
     public User getUserByEmail(String email){
@@ -51,14 +53,16 @@ public class UserService {
         return user;
     }
 
-    public String validarUsuario(String email, String password){
+    public TokenResponse validarUsuario(TokenRequest tokenRequest){
 
-        User user = getUserByEmail(email);
+        User user = getUserByEmail(tokenRequest.getEmail());
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(tokenRequest.getPassword(), user.getPassword())) {
             throw new RuntimeException("Credenciales invalidas");
         }
-        return jwtService.generateToken(user.getEmail(), Map.of("name", user.getName()));
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken(jwtService.generateToken(user.getEmail(), Map.of("name", user.getName())));
+        return tokenResponse;
     }
     
 }
