@@ -121,9 +121,7 @@ public class EmailProvider {
 
         try {
 
-            String filename = "logo_loopers_name.jpeg";
-            String resourcePath = "/static/img/" + filename;
-
+            String resourcePath = "/static/img/" + fileName;
             InputStream imageStream = getClass().getResourceAsStream(resourcePath);
 
             if (imageStream == null) {
