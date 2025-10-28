@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.migramer.store.models.EmailRequest;
+import com.migramer.store.models.EmailResponse;
 
 @Component
 public class EmailProvider {
@@ -56,13 +57,15 @@ public class EmailProvider {
 
     }
 
-    public void sendEmail(EmailRequest emailRequest) {
+    public EmailResponse sendEmail(EmailRequest emailRequest) {
 
         try {
 
             loadProperties();
-
+            
             loadAutentication();
+            
+            EmailResponse emailResponse = new EmailResponse();
 
             Session session = Session.getInstance(properties, authenticator);
 
@@ -86,10 +89,14 @@ public class EmailProvider {
             message.setSentDate(new Date());
             Transport.send(message);
 
-            logger.info("Mensaje envíado");
+            String operacionExitosa = "Mensaje envíado";
+            logger.info(operacionExitosa);
+            emailResponse.setMensaje(operacionExitosa);
+            return emailResponse;
 
         } catch (Exception e) {
             logger.error("Ocurrió un error al mandar el mensaje", e);
+            throw new RuntimeException(e);
         }
 
     }
