@@ -32,6 +32,8 @@ import org.springframework.stereotype.Component;
 import com.migramer.store.models.EmailRequest;
 import com.migramer.store.models.EmailResponse;
 
+import jakarta.annotation.PostConstruct;
+
 @Component
 public class EmailProvider {
 
@@ -69,13 +71,15 @@ public class EmailProvider {
 
     }
 
+    @PostConstruct
+    protected void loadConfiguration() {
+        loadProperties();
+        loadAutentication();
+    }
+
     public EmailResponse sendEmail(EmailRequest emailRequest) {
 
         try {
-
-            loadProperties();
-
-            loadAutentication();
 
             EmailResponse emailResponse = new EmailResponse();
 
@@ -146,9 +150,6 @@ public class EmailProvider {
 
     public EmailResponse sendImageEmail(EmailRequest emailRequest) {
         try {
-            loadProperties();
-            loadAutentication();
-
             EmailResponse emailResponse = new EmailResponse();
 
             Session session = Session.getInstance(properties, authenticator);
