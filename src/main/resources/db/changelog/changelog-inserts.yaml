@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+        id: insert_roles
+        author: roberto.cruz
+        changes:
+            - sqlFile:
+                  path: db/inserts/rol/rol.sql
+                  relativeToChangelogFile: false
+                  encoding: UTF-8
+                  splitStatements: true
+                  stripComments: true

@@ -6,3 +6,10 @@ databaseChangeLog:
         - sql:
             ALTER TABLE tienda
             ADD COLUMN uuid VARCHAR(255);
+  - changeSet:
+      id: 2025-07-05-alter-ususario
+      author: roberto.cruz
+      changes:
+        - sql:
+            ALTER TABLE usuario
+            ALTER COLUMN fk_tienda DROP NOT NULL;

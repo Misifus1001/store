@@ -9,11 +9,10 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.migramer.store.entities.Tienda;
+import com.migramer.store.exceptions.ResourceNotFoundException;
 import com.migramer.store.models.TiendaDto;
 import com.migramer.store.repository.TiendaRepository;
 
@@ -27,7 +26,7 @@ public class TiendaService {
 
     private final Logger logger = LoggerFactory.getLogger(TiendaService.class);
 
-    private TiendaDto tiendaEntityToTiendaDto(Tienda tienda){
+    private TiendaDto tiendaEntityToTiendaDto(Tienda tienda) {
         TiendaDto tiendaDto = new TiendaDto();
         tiendaDto.setNombre(tienda.getNombre());
         tiendaDto.setUbicacion(tienda.getUbicacion());
@@ -37,10 +36,10 @@ public class TiendaService {
     }
 
     @Transactional
-    public TiendaDto save(TiendaDto tiendaDto){
+    public TiendaDto save(TiendaDto tiendaDto) {
 
         logger.info("Entrando: save()");
-        logger.info("TiendaDto: {}",tiendaDto);
+        logger.info("TiendaDto: {}", tiendaDto);
         Tienda tienda = new Tienda();
         tienda.setUuid(UUID.randomUUID().toString());
         tienda.setEstatus(true);
@@ -55,7 +54,7 @@ public class TiendaService {
         return tiendaEntityToTiendaDto(tienda);
     }
 
-    public List<TiendaDto> getTiendasDto(){
+    public List<TiendaDto> getTiendasDto() {
 
         List<TiendaDto> tiendaDtoList = new ArrayList<>();
 
@@ -70,7 +69,7 @@ public class TiendaService {
         return tiendaDtoList;
     }
 
-    public TiendaDto getTiendaById(Integer id){
+    public TiendaDto getTiendaById(Integer id) {
 
         TiendaDto tiendaDto = new TiendaDto();
         Optional<Tienda> tienda = tiendaRepository.findById(id);
@@ -82,7 +81,12 @@ public class TiendaService {
         return tiendaDto;
     }
 
-    public Tienda getTiendaEntityById(Integer id){
+    public Tienda findTiendaById(Integer id) {
+        Tienda tienda = tiendaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tienda", id));
+        return tienda;
+    }
+
+    public Tienda getTiendaEntityById(Integer id) {
 
         logger.info("Entrando: getTiendaEntityById()");
 
@@ -93,7 +97,7 @@ public class TiendaService {
         return tienda.get();
     }
 
-    public Tienda getTiendaEntityByUUID(String uuidTienda){
+    public Tienda getTiendaEntityByUUID(String uuidTienda) {
 
         logger.info("Entrando: getTiendaEntityByUUID()");
 

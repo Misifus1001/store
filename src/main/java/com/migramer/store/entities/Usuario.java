@@ -2,16 +2,7 @@ package com.migramer.store.entities;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -22,19 +13,30 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(nullable = false, length = 50)
     private String nombre;
+
+    @Column(nullable = false, length = 50, unique = true)
     private String email;
+
+    @Column(nullable = false, length = 255)
     private String password;
-    // private String descripcion;
+
+    @Column(nullable = false)
     private Boolean estatus;
-    @Column(name = "fecha_creacion")
+
+    @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne
     @JoinColumn(name = "fk_rol", nullable = false)
-    private Rol rolForUsuario;
-    
-    @ManyToOne(optional = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "fk_tienda")
-    private Tienda tiendaForUsuario;
+    private Rol rol;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_tienda", nullable = true)
+    private Tienda tienda;
+
+    // @OneToMany(mappedBy = "vendedor", fetch = FetchType.LAZY)
+    // private List<Venta> ventas;
 }
