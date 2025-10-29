@@ -28,13 +28,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/public/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/dueño/**").hasAnyRole("DUEÑO", "ADMIN")
+                        .requestMatchers("/propietario/**").hasAnyRole("PROPIETARIO", "ADMIN")
                         .requestMatchers("/tiendas","/tiendas/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/vendedor/**").hasAnyRole("VENDEDOR", "DUEÑO", "ADMIN")
+                        .requestMatchers("/vendedor/**").hasAnyRole("VENDEDOR", "PROPIETARIO", "ADMIN")
                         .requestMatchers("/productos/guardar", "/productos/actualizar", "/productos/eliminar")
-                        .hasAnyRole("DUEÑO", "ADMIN")
-                        .requestMatchers("/productos/**").hasAnyRole("VENDEDOR", "DUEÑO", "ADMIN")
-                        .requestMatchers("/ventas/**").hasAnyRole("VENDEDOR", "DUEÑO", "ADMIN")
+                        .hasAnyRole("PROPIETARIO", "ADMIN")
+                        .requestMatchers("/productos/**").hasAnyRole("VENDEDOR", "PROPIETARIO", "ADMIN")
+                        .requestMatchers("/ventas/**").hasAnyRole("VENDEDOR", "PROPIETARIO", "ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

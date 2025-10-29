@@ -6,6 +6,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.migramer.store.models.ChangePasswordRequest;
+import com.migramer.store.models.RecuperarPasswordResponse;
+import com.migramer.store.models.RecuperarPaswordRequest;
 import com.migramer.store.models.TokenRequest;
 import com.migramer.store.models.TokenResponse;
 import com.migramer.store.models.UsuarioDto;
@@ -26,7 +29,19 @@ public class AuthController {
         return ResponseEntity.ok(usuarioService.validarUsuario(tokenRequest));
     }
 
-    @PreAuthorize("hasRole('DUEÑO') or hasRole('ADMIN')")
+    @PostMapping("/reestablecer-password")
+    public ResponseEntity<RecuperarPasswordResponse> restablecerPassword(@Valid @RequestBody RecuperarPaswordRequest recuperarPaswordRequest) {
+        RecuperarPasswordResponse recuperarPasswordResponse = usuarioService.callReestablecerPassword(recuperarPaswordRequest);
+        return ResponseEntity.ok(recuperarPasswordResponse);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<TokenResponse> saveNewPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+        TokenResponse tokenResponse = usuarioService.changePassword(changePasswordRequest);
+        return ResponseEntity.ok(tokenResponse);
+    }
+
+    @PreAuthorize("hasRole('PROPIETARIO') or hasRole('ADMIN')")
     @PostMapping("/registrar/vendedor")
     public ResponseEntity<TokenResponse> registrarVendedor(
             @Valid @RequestBody UsuarioDto usuarioDto,
@@ -36,11 +51,11 @@ public class AuthController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/registrar/dueño")
-    public ResponseEntity<TokenResponse> registrarDueño(
+    @PostMapping("/registrar/propietario")
+    public ResponseEntity<TokenResponse> registrarPropietario(
             @Valid @RequestBody UsuarioDto usuarioDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Integer tiendaIdUsuarioActual = userDetails.getTiendaId();
-        return ResponseEntity.ok(usuarioService.registrarUsuario(usuarioDto, "DUEÑO", tiendaIdUsuarioActual));
+        return ResponseEntity.ok(usuarioService.registrarUsuario(usuarioDto, "PROPIETARIO", tiendaIdUsuarioActual));
     }
 }

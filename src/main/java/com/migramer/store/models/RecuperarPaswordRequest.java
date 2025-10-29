@@ -5,12 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class TokenRequest {
-
-    @NotBlank(message = "El campo email es obligatorio")
+public class RecuperarPaswordRequest {
+    @NotBlank(message = "El campo 'email' es **obligatorio**.")
     @Email(message = "El valor de 'email' debe ser una **dirección de correo electrónico válida**.")
     private String email;
-
-    @NotBlank(message = "El campo password es obligatorio")
-    private String password;
 }
