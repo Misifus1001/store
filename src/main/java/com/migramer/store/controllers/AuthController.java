@@ -31,12 +31,7 @@ public class AuthController {
     public ResponseEntity<TokenResponse> registrarVendedor(
             @Valid @RequestBody UsuarioDto usuarioDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        // String rolUsuarioActual = userDetails.getRol();
         Integer tiendaIdUsuarioActual = userDetails.getTiendaId();
-
-        // if (!"DUEÑO".equals(rolUsuarioActual) && !"ADMIN".equals(rolUsuarioActual)) {
-        //     throw new RuntimeException("No tienes permisos para registrar vendedores");
-        // }
         return ResponseEntity.ok(usuarioService.registrarUsuario(usuarioDto, "VENDEDOR", tiendaIdUsuarioActual));
     }
 
@@ -45,13 +40,7 @@ public class AuthController {
     public ResponseEntity<TokenResponse> registrarDueño(
             @Valid @RequestBody UsuarioDto usuarioDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        // String rolUsuarioActual = userDetails.getRol();
         Integer tiendaIdUsuarioActual = userDetails.getTiendaId();
-
-        // if (!"ADMIN".equals(rolUsuarioActual)) {
-        //     throw new RuntimeException("Solo los administradores pueden registrar dueños");
-        // }
-
         return ResponseEntity.ok(usuarioService.registrarUsuario(usuarioDto, "DUEÑO", tiendaIdUsuarioActual));
     }
 }
