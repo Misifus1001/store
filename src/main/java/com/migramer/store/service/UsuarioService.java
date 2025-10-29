@@ -55,7 +55,7 @@ public class UsuarioService {
 
     @Autowired
     @Lazy
-    private UsuarioService usuarioService;
+    private UsuarioService self;
 
     private final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
@@ -144,7 +144,7 @@ public class UsuarioService {
     }
 
     public void enviarPasswordByEmail(String emailTo, String password){
-        ejecutarEnviarPasswordByEmail(emailTo,password);
+        self.ejecutarEnviarPasswordByEmail(emailTo,password);
     }
 
     @Async
@@ -158,13 +158,13 @@ public class UsuarioService {
 
     public RecuperarPasswordResponse callReestablecerPassword(RecuperarPaswordRequest recuperarPasword){
         String password = passwordGenerator.generatePassword();
-        usuarioService.reestablecerPassword(recuperarPasword.getEmail(), password);
-        usuarioService.enviarPasswordByEmail(recuperarPasword.getEmail(), password);
+        reestablecerPassword(recuperarPasword.getEmail(), password);
+        enviarPasswordByEmail(recuperarPasword.getEmail(), password);
         return new RecuperarPasswordResponse("La nueva contraseña ha sido enviada a tu correo");
     }
 
     public void reestablecerPassword(String email, String password) {
-        ejecutarReestablecerPassword(email, password);
+        self.ejecutarReestablecerPassword(email, password);
     }
 
     @Async
