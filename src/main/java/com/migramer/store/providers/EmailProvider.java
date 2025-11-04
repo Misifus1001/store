@@ -7,13 +7,13 @@ import java.util.Date;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
+// import javax.activation.DataSource;
+// import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
-import javax.mail.BodyPart;
+// import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
+// import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -26,7 +26,7 @@ import javax.mail.util.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
+// import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.migramer.store.models.EmailRequest;
