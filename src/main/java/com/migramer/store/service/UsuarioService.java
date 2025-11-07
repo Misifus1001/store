@@ -14,19 +14,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.migramer.store.components.PasswordGenerator;
+import com.migramer.store.emailprovider.models.EmailRequest;
+import com.migramer.store.emailprovider.service.EmailProvider;
 import com.migramer.store.entities.Rol;
 import com.migramer.store.entities.Tienda;
 import com.migramer.store.entities.Usuario;
 import com.migramer.store.exceptions.BusinessException;
 import com.migramer.store.exceptions.ResourceNotFoundException;
 import com.migramer.store.models.ChangePasswordRequest;
-import com.migramer.store.models.EmailRequest;
+// import com.migramer.store.models.EmailRequest;
 import com.migramer.store.models.RecuperarPasswordResponse;
 import com.migramer.store.models.RecuperarPaswordRequest;
 import com.migramer.store.models.TokenRequest;
 import com.migramer.store.models.TokenResponse;
 import com.migramer.store.models.UsuarioDto;
-import com.migramer.store.providers.EmailProvider;
+// import com.migramer.store.providers.EmailProvider;
 import com.migramer.store.repository.UsuarioRepository;
 
 @Service
@@ -149,11 +151,12 @@ public class UsuarioService {
 
     @Async
     public void ejecutarEnviarPasswordByEmail(String emailTo, String password){
-        EmailRequest emailRequest = new EmailRequest();
+        com.migramer.store.emailprovider.models.EmailRequest emailRequest = new EmailRequest();
         emailRequest.setMessage("Tu nueva contraseña es: "+ password);
         emailRequest.setEmailTo(emailTo);
         emailRequest.setSubject("REESTABLECIMIENTO DE CONTRASEÑA");
-        emailProvider.sendImageEmail(emailRequest);
+        logger.info("password: {}",password);
+        emailProvider.sendEmail(emailRequest);
     }
 
     public RecuperarPasswordResponse callReestablecerPassword(RecuperarPaswordRequest recuperarPasword){
