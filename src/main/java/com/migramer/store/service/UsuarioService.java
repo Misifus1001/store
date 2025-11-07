@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.migramer.store.components.PasswordGenerator;
 import com.migramer.store.emailprovider.models.EmailRequest;
+
+import com.migramer.store.emailprovider.models.TypeHtmlBody;
 import com.migramer.store.emailprovider.service.EmailProvider;
 import com.migramer.store.entities.Rol;
 import com.migramer.store.entities.Tienda;
@@ -151,12 +153,12 @@ public class UsuarioService {
 
     @Async
     public void ejecutarEnviarPasswordByEmail(String emailTo, String password){
-        com.migramer.store.emailprovider.models.EmailRequest emailRequest = new EmailRequest();
+        EmailRequest emailRequest = new EmailRequest();
         emailRequest.setMessage("Tu nueva contraseña es: "+ password);
         emailRequest.setEmailTo(emailTo);
         emailRequest.setSubject("REESTABLECIMIENTO DE CONTRASEÑA");
         logger.info("password: {}",password);
-        emailProvider.sendEmail(emailRequest);
+        emailProvider.sendEmail(emailRequest, TypeHtmlBody.RESET_PASSWORD);
     }
 
     public RecuperarPasswordResponse callReestablecerPassword(RecuperarPaswordRequest recuperarPasword){

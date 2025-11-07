@@ -28,15 +28,16 @@ public class EmailProvider {
     @Autowired
     private HtmlBody htmlBody;
 
-    public EmailResponse sendEmail(EmailRequest emailRequest) {
+    public EmailResponse sendEmail(EmailRequest emailRequest, TypeHtmlBody typeHtmlBody) {
         executeSendSimpleEmail(
                 emailRequest.getEmailTo(),
                 emailRequest.getSubject(),
-                emailRequest.getMessage());
+                emailRequest.getMessage(),
+                typeHtmlBody);
         return new EmailResponse("Mensaje enviado correctamente");
     }
 
-    public void executeSendSimpleEmail(String to, String subject, String text) {
+    public void executeSendSimpleEmail(String to, String subject, String text, TypeHtmlBody typeHtmlBody) {
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -46,7 +47,7 @@ public class EmailProvider {
             helper.setTo(to);
             helper.setSubject(subject);
 
-            String htmlContent = htmlBody.getHTMLBody(text, TypeHtmlBody.RESET_PASSWORD);
+            String htmlContent = htmlBody.getHTMLBody(text, typeHtmlBody);
             helper.setText(htmlContent, true);
 
             helper.addInline("logoImage", getLogoImage("logo_loopers_name.jpeg"));
@@ -54,24 +55,11 @@ public class EmailProvider {
             javaMailSender.send(mimeMessage);
 
             log.info("Correo enviado correctamente a {}", to);
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             log.error("Error al enviar correo: ", e);
             throw new RuntimeException("Error al enviar correo", e);
         }
-      
-    }
 
-    public void sendHtmlEmail(String to, String subject, String htmlContent) {
-        try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(htmlContent, true);
-            javaMailSender.send(message);
-        } catch (MessagingException e) {
-            log.error("Error al enviar correo HTML: ", e);
-        }
     }
 
     protected ByteArrayDataSource getLogoImage(String fileName) {

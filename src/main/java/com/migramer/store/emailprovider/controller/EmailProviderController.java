@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.migramer.store.emailprovider.models.EmailRequest;
 import com.migramer.store.emailprovider.models.EmailResponse;
+import com.migramer.store.emailprovider.models.TypeHtmlBody;
 import com.migramer.store.emailprovider.service.EmailProvider;
 
 import jakarta.validation.Valid;
@@ -23,8 +24,8 @@ public class EmailProviderController {
     }
 
     @PostMapping("/send-email")
-    public ResponseEntity<EmailResponse> sendemail(@Valid @RequestBody EmailRequest emailRequest) {
-        EmailResponse emailResponse = emailProvider.sendEmail(emailRequest);
+    public ResponseEntity<EmailResponse> sendemail(@Valid @RequestBody EmailRequest emailRequest, TypeHtmlBody typeHtmlBody) {
+        EmailResponse emailResponse = emailProvider.sendEmail(emailRequest, typeHtmlBody);
         return ResponseEntity.ok(emailResponse);
     }
     
