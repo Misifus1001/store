@@ -24,18 +24,21 @@ public class FirebaseConfig {
     private final Logger logger = LoggerFactory.getLogger(FirebaseConfig.class);
 
     @PostConstruct
-    public void initFirebase() throws Exception {
+    public void initFirebase() {
+        try {
+            if (FirebaseApp.getApps().isEmpty()) {
+                InputStream credentialsStream = new ByteArrayInputStream(
+                        firebaseCredentialsJson.getBytes(StandardCharsets.UTF_8));
 
-        if (FirebaseApp.getApps().isEmpty()) {
-            InputStream credentialsStream = new ByteArrayInputStream(
-                    firebaseCredentialsJson.getBytes(StandardCharsets.UTF_8));
+                FirebaseOptions options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(credentialsStream))
+                        .build();
 
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(credentialsStream))
-                    .build();
-
-            FirebaseApp.initializeApp(options);
-            logger.info("Firebase inicializado");
+                FirebaseApp.initializeApp(options);
+                logger.info("Firebase inicializado");
+            }
+        } catch (Exception e) {
+            logger.info("Error inicializando FIREBASE", e);
         }
     }
 }
