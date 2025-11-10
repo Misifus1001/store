@@ -62,26 +62,15 @@ public class UsuarioService {
 
     @Autowired
     private WebHookService webHookService;
+
     private final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     @Transactional
     public void guardarUsuario(UsuarioDto usuarioDto, String rolSolicitado, Integer tiendaIdUsuarioActual) {
         Rol rol = rolService.getRolByName(rolSolicitado);
-
         Tienda tienda = tiendaService.findTiendaById(usuarioDto.getIdTienda());
 
-        if (rolSolicitado.equals("PROPIETARIO") && !esAdmin(tiendaIdUsuarioActual)) {
-            throw new BusinessException("Solo los administradores pueden crear propietarios de tienda");
-        }
-
-        if (rolSolicitado.equals("PROPIETARIO")
-                && usuarioRepository.existsPropietarioByTiendaId(usuarioDto.getIdTienda())) {
-            throw new BusinessException("Ya existe un dueño para esta tienda");
-        }
-
-        if (usuarioRepository.findByEmail(usuarioDto.getEmail()).isPresent()) {
-            throw new BusinessException("El email ya está registrado");
-        }
+        validarCreacionUsuario(usuarioDto, rolSolicitado, tiendaIdUsuarioActual);
 
         Usuario usuario = new Usuario();
         usuario.setNombre(usuarioDto.getNombre());
@@ -95,19 +84,24 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    private void validarCreacionUsuario(UsuarioDto usuarioDto, String rolSolicitado, Integer tiendaIdUsuarioActual) {
+        if (rolSolicitado.equals("PROPIETARIO") && !esAdmin(tiendaIdUsuarioActual)) {
+            throw new BusinessException("Solo los administradores pueden crear propietarios de tienda");
+        }
+
+        if (rolSolicitado.equals("PROPIETARIO")
+                && usuarioRepository.existsPropietarioByTiendaId(usuarioDto.getIdTienda())) {
+            throw new BusinessException("Ya existe un dueño para esta tienda");
+        }
+
+        if (usuarioRepository.findByEmail(usuarioDto.getEmail()).isPresent()) {
+            throw new BusinessException("El email ya está registrado");
+        }
+    }
+
     public TokenResponse registrarUsuario(UsuarioDto usuarioDto, String rolSolicitado, Integer tiendaIdUsuarioActual) {
         guardarUsuario(usuarioDto, rolSolicitado, tiendaIdUsuarioActual);
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("nombre", usuarioDto.getNombre());
-        claims.put("rol", rolSolicitado);
-        claims.put("tiendaId", usuarioDto.getIdTienda());
-
-        TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setToken(jwtService.generateToken(usuarioDto.getEmail(), claims));
-        tokenResponse.setRol(rolSolicitado);
-        tokenResponse.setTiendaId(usuarioDto.getIdTienda());
-        return tokenResponse;
+        return generarTokenResponse(usuarioDto.getEmail(), usuarioDto.getNombre(), rolSolicitado, usuarioDto.getIdTienda());
     }
 
     public Usuario getUsuarioByEmail(String email) {
@@ -121,27 +115,11 @@ public class UsuarioService {
         if (!passwordEncoder.matches(tokenRequest.getPassword(), usuario.getPassword())) {
             throw new BusinessException("Credenciales inválidas");
         }
-
         if (!usuario.getEstatus()) {
             throw new BusinessException("Usuario deshabilitado");
         }
 
-        TokenResponse tokenResponse = new TokenResponse();
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("nombre", usuario.getNombre());
-        claims.put("rol", usuario.getRol().getNombre());
-
-        if (!usuario.getRol().getNombre().equals("ADMIN")) {
-            claims.put("tiendaId", usuario.getTienda().getId());
-            tokenResponse.setTiendaId(usuario.getTienda().getId());
-        }
-
-        tokenResponse.setToken(jwtService.generateToken(usuario.getEmail(), claims));
-        tokenResponse.setRol(usuario.getRol().getNombre());
-
-        tokenResponse.setNombre(usuario.getNombre());
-
-        return tokenResponse;
+        return generarTokenResponse(usuario);
     }
 
     @Transactional
@@ -188,42 +166,62 @@ public class UsuarioService {
     }
 
     public TokenResponse changePassword(ChangePasswordRequest changePasswordRequest) {
-
         Usuario usuario = getUsuarioByEmail(changePasswordRequest.getEmail());
 
-        if (!passwordEncoder.matches(changePasswordRequest.getPassword(), usuario.getPassword())) {
-            throw new BusinessException("Credenciales inválidas");
-        }
-
-        if (!usuario.getEstatus()) {
-            throw new BusinessException("Usuario deshabilitado");
-        }
-
-        if (changePasswordRequest.getPassword().equals(changePasswordRequest.getNewPassword())) {
-            throw new BusinessException("La contraseña no puede ser la misma");
-
-        }
+        validarCambioPassword(changePasswordRequest, usuario);
 
         usuario.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         actualizarUsuario(usuario);
-        TokenResponse tokenResponse = new TokenResponse();
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("nombre", usuario.getNombre());
-        claims.put("rol", usuario.getRol().getNombre());
 
-        if (!usuario.getRol().getNombre().equals("ADMIN")) {
-            claims.put("tiendaId", usuario.getTienda().getId());
-            tokenResponse.setTiendaId(usuario.getTienda().getId());
+        return generarTokenResponse(usuario);
+    }
+
+    private void validarCambioPassword(ChangePasswordRequest changePasswordRequest, Usuario usuario) {
+        if (!passwordEncoder.matches(changePasswordRequest.getPassword(), usuario.getPassword())) {
+            throw new BusinessException("Credenciales inválidas");
         }
-        tokenResponse.setToken(jwtService.generateToken(usuario.getEmail(), claims));
-        tokenResponse.setRol(usuario.getRol().getNombre());
-        tokenResponse.setNombre(usuario.getNombre());
-        return tokenResponse;
+        if (!usuario.getEstatus()) {
+            throw new BusinessException("Usuario deshabilitado");
+        }
+        if (changePasswordRequest.getPassword().equals(changePasswordRequest.getNewPassword())) {
+            throw new BusinessException("La contraseña no puede ser la misma");
+        }
     }
 
     private boolean esAdmin(Integer usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", usuarioId));
         return "ADMIN".equals(usuario.getRol().getNombre());
+    }
+
+    private TokenResponse generarTokenResponse(Usuario usuario) {
+        String rol = usuario.getRol().getNombre();
+        Integer tiendaId = rol.equals("ADMIN") ? null : usuario.getTienda().getId();
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("nombre", usuario.getNombre());
+        claims.put("rol", rol);
+        if (tiendaId != null) claims.put("tiendaId", tiendaId);
+
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken(jwtService.generateToken(usuario.getEmail(), claims));
+        tokenResponse.setRol(rol);
+        tokenResponse.setNombre(usuario.getNombre());
+        tokenResponse.setTiendaId(tiendaId);
+        return tokenResponse;
+    }
+
+    private TokenResponse generarTokenResponse(String email, String nombre, String rol, Integer tiendaId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("nombre", nombre);
+        claims.put("rol", rol);
+        if (!"ADMIN".equals(rol)) claims.put("tiendaId", tiendaId);
+
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken(jwtService.generateToken(email, claims));
+        tokenResponse.setRol(rol);
+        tokenResponse.setTiendaId(tiendaId);
+        tokenResponse.setNombre(nombre);
+        return tokenResponse;
     }
 }

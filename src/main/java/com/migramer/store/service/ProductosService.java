@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,8 @@ import com.migramer.store.entities.Producto;
 import com.migramer.store.entities.Tienda;
 import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.models.ProductoDto;
+import com.migramer.store.providers.webhook.WebHookService;
+import com.migramer.store.providers.webhook.model.NameNotification;
 import com.migramer.store.repository.ProductoRepository;
 
 @Service
@@ -26,11 +30,19 @@ public class ProductosService {
     @Autowired
     private TiendaService tiendaService;
 
+    @Autowired
+    @Lazy
+    private ProductosService self;
+
+    @Autowired
+    private WebHookService webHookService;
+
     private final Logger logger = LoggerFactory.getLogger(ProductosService.class);
 
     public ProductoDto saveProductoDto(ProductoDto productoDto) {
         Tienda tienda = tiendaService.getTiendaEntityByUUID(productoDto.getUuidTienda());
         Producto producto = save(productoDto, tienda);
+        notificateTiendaChangeProducts(productoDto.getUuidTienda());
         return productoToProductoDto(producto);
     }
 
@@ -54,6 +66,15 @@ public class ProductosService {
         logger.info("Saliendo: save()");
 
         return producto;
+    }
+
+    private void notificateTiendaChangeProducts(String uuidTienda){
+        self.executeCotificateTiendaChangeProducts(uuidTienda);
+    }
+
+    @Async
+    private void executeCotificateTiendaChangeProducts(String uuidTienda){
+        webHookService.sendNotificationChanges(NameNotification.PRODUCTOS, uuidTienda);
     }
 
     public PaginacionResponse getProductsByPageAndTienda(String uuidTienda, Integer page, Integer size) {

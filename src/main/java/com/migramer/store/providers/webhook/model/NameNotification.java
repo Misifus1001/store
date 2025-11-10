@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum NameNotification {
 
     USUARIO("users"),
+    PRODUCTOS("productos"),
     TIENDA("tiendas"),
     VENTAS("ventas");
 
