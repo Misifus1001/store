@@ -32,35 +32,70 @@ import com.migramer.store.models.TokenResponse;
 import com.migramer.store.models.UsuarioDto;
 // import com.migramer.store.providers.EmailProvider;
 import com.migramer.store.repository.UsuarioRepository;
+import com.migramer.store.webhook.WebHookService;
 
 @Service
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final RolService rolService;
+    private final TiendaService tiendaService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final PasswordGenerator passwordGenerator;
+    private final EmailProvider emailProvider;
+    private final UsuarioService self;
+    private final WebHookService webHookService;
 
     @Autowired
-    private RolService rolService;
+    public UsuarioService(
+            UsuarioRepository usuarioRepository,
+            RolService rolService,
+            TiendaService tiendaService,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService,
+            PasswordGenerator passwordGenerator,
+            EmailProvider emailProvider,
+            @Lazy UsuarioService self,
+            WebHookService webHookService) {
+        this.usuarioRepository = usuarioRepository;
+        this.rolService = rolService;
+        this.tiendaService = tiendaService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.passwordGenerator = passwordGenerator;
+        this.emailProvider = emailProvider;
+        this.self = self;
+        this.webHookService = webHookService;
+    }
 
-    @Autowired
-    private TiendaService tiendaService;
+    // @Autowired
+    // private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    // @Autowired
+    // private RolService rolService;
 
-    @Autowired
-    private JwtService jwtService;
+    // @Autowired
+    // private TiendaService tiendaService;
 
-    @Autowired
-    private PasswordGenerator passwordGenerator;
+    // @Autowired
+    // private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private EmailProvider emailProvider;
+    // @Autowired
+    // private JwtService jwtService;
 
-    @Autowired
-    @Lazy
-    private UsuarioService self;
+    // @Autowired
+    // private PasswordGenerator passwordGenerator;
 
+    // @Autowired
+    // private EmailProvider emailProvider;
+
+    // @Autowired
+    // @Lazy
+    // private UsuarioService self;
+
+    // @Autowired
+    // private WebHookService webHookService;
     private final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     @Transactional
@@ -73,7 +108,8 @@ public class UsuarioService {
             throw new BusinessException("Solo los administradores pueden crear propietarios de tienda");
         }
 
-        if (rolSolicitado.equals("PROPIETARIO") && usuarioRepository.existsPropietarioByTiendaId(usuarioDto.getIdTienda())) {
+        if (rolSolicitado.equals("PROPIETARIO")
+                && usuarioRepository.existsPropietarioByTiendaId(usuarioDto.getIdTienda())) {
             throw new BusinessException("Ya existe un dueño para esta tienda");
         }
 
@@ -95,12 +131,12 @@ public class UsuarioService {
 
     public TokenResponse registrarUsuario(UsuarioDto usuarioDto, String rolSolicitado, Integer tiendaIdUsuarioActual) {
         guardarUsuario(usuarioDto, rolSolicitado, tiendaIdUsuarioActual);
-        
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("nombre", usuarioDto.getNombre());
         claims.put("rol", rolSolicitado);
         claims.put("tiendaId", usuarioDto.getIdTienda());
-        
+
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken(jwtService.generateToken(usuarioDto.getEmail(), claims));
         tokenResponse.setRol(rolSolicitado);
@@ -115,15 +151,15 @@ public class UsuarioService {
 
     public TokenResponse validarUsuario(TokenRequest tokenRequest) {
         Usuario usuario = getUsuarioByEmail(tokenRequest.getEmail());
-        
+
         if (!passwordEncoder.matches(tokenRequest.getPassword(), usuario.getPassword())) {
             throw new BusinessException("Credenciales inválidas");
         }
-        
+
         if (!usuario.getEstatus()) {
             throw new BusinessException("Usuario deshabilitado");
         }
-        
+
         TokenResponse tokenResponse = new TokenResponse();
         Map<String, Object> claims = new HashMap<>();
         claims.put("nombre", usuario.getNombre());
@@ -138,30 +174,40 @@ public class UsuarioService {
         tokenResponse.setRol(usuario.getRol().getNombre());
 
         tokenResponse.setNombre(usuario.getNombre());
-        
+
         return tokenResponse;
     }
 
     @Transactional
-    public void actualizarUsuario(Usuario usuario){
+    public void actualizarUsuario(Usuario usuario) {
         usuarioRepository.save(usuario);
+        notificateUser("8115df28-69dc-4e8c-a06f-4d53128ed39a");
     }
 
-    public void enviarPasswordByEmail(String emailTo, String password){
-        self.ejecutarEnviarPasswordByEmail(emailTo,password);
+    public void enviarPasswordByEmail(String emailTo, String password) {
+        self.ejecutarEnviarPasswordByEmail(emailTo, password);
     }
 
     @Async
-    public void ejecutarEnviarPasswordByEmail(String emailTo, String password){
+    public void ejecutarEnviarPasswordByEmail(String emailTo, String password) {
         EmailRequest emailRequest = new EmailRequest();
-        emailRequest.setMessage("Tu nueva contraseña es: "+ password);
+        emailRequest.setMessage("Tu nueva contraseña es: " + password);
         emailRequest.setEmailTo(emailTo);
         emailRequest.setSubject("REESTABLECIMIENTO DE CONTRASEÑA");
-        logger.info("password: {}",password);
+        logger.info("password: {}", password);
         emailProvider.sendEmail(emailRequest, TypeHtmlBody.RESET_PASSWORD);
     }
 
-    public RecuperarPasswordResponse callReestablecerPassword(RecuperarPaswordRequest recuperarPasword){
+    private void notificateUser(String uuuidTienda) {
+        executeNotificateUser("usuario", uuuidTienda);
+    }
+
+    @Async
+    private void executeNotificateUser(String endpoint, String uuuidTienda) {
+        webHookService.sendNotificationChanges(endpoint, uuuidTienda);
+    }
+
+    public RecuperarPasswordResponse callReestablecerPassword(RecuperarPaswordRequest recuperarPasword) {
         String password = passwordGenerator.generatePassword();
         reestablecerPassword(recuperarPasword.getEmail(), password);
         enviarPasswordByEmail(recuperarPasword.getEmail(), password);
@@ -179,21 +225,21 @@ public class UsuarioService {
         actualizarUsuario(usuario);
     }
 
-    public TokenResponse changePassword(ChangePasswordRequest changePasswordRequest){
+    public TokenResponse changePassword(ChangePasswordRequest changePasswordRequest) {
 
         Usuario usuario = getUsuarioByEmail(changePasswordRequest.getEmail());
-        
+
         if (!passwordEncoder.matches(changePasswordRequest.getPassword(), usuario.getPassword())) {
             throw new BusinessException("Credenciales inválidas");
         }
-        
+
         if (!usuario.getEstatus()) {
             throw new BusinessException("Usuario deshabilitado");
         }
 
         if (changePasswordRequest.getPassword().equals(changePasswordRequest.getNewPassword())) {
             throw new BusinessException("La contraseña no puede ser la misma");
-            
+
         }
 
         usuario.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
