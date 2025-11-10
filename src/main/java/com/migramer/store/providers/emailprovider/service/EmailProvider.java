@@ -1,4 +1,4 @@
-package com.migramer.store.emailprovider.service;
+package com.migramer.store.providers.emailprovider.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,10 +8,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import com.migramer.store.emailprovider.html.HtmlBody;
-import com.migramer.store.emailprovider.models.EmailRequest;
-import com.migramer.store.emailprovider.models.EmailResponse;
-import com.migramer.store.emailprovider.models.TypeHtmlBody;
+import com.migramer.store.providers.emailprovider.html.HtmlBody;
+import com.migramer.store.providers.emailprovider.models.EmailRequest;
+import com.migramer.store.providers.emailprovider.models.EmailResponse;
+import com.migramer.store.providers.emailprovider.models.TypeHtmlBody;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

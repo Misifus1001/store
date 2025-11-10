@@ -1,4 +1,4 @@
-package com.migramer.store.emailprovider.models;
+package com.migramer.store.providers.emailprovider.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

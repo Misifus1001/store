@@ -14,89 +14,54 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.migramer.store.components.PasswordGenerator;
-import com.migramer.store.emailprovider.models.EmailRequest;
-
-import com.migramer.store.emailprovider.models.TypeHtmlBody;
-import com.migramer.store.emailprovider.service.EmailProvider;
 import com.migramer.store.entities.Rol;
 import com.migramer.store.entities.Tienda;
 import com.migramer.store.entities.Usuario;
 import com.migramer.store.exceptions.BusinessException;
 import com.migramer.store.exceptions.ResourceNotFoundException;
 import com.migramer.store.models.ChangePasswordRequest;
-// import com.migramer.store.models.EmailRequest;
 import com.migramer.store.models.RecuperarPasswordResponse;
 import com.migramer.store.models.RecuperarPaswordRequest;
 import com.migramer.store.models.TokenRequest;
 import com.migramer.store.models.TokenResponse;
 import com.migramer.store.models.UsuarioDto;
-// import com.migramer.store.providers.EmailProvider;
+import com.migramer.store.providers.emailprovider.models.EmailRequest;
+import com.migramer.store.providers.emailprovider.models.TypeHtmlBody;
+import com.migramer.store.providers.emailprovider.service.EmailProvider;
+import com.migramer.store.providers.webhook.WebHookService;
+import com.migramer.store.providers.webhook.model.NameNotification;
 import com.migramer.store.repository.UsuarioRepository;
-import com.migramer.store.webhook.WebHookService;
-import com.migramer.store.webhook.model.NameNotification;
 
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
-    private final RolService rolService;
-    private final TiendaService tiendaService;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final PasswordGenerator passwordGenerator;
-    private final EmailProvider emailProvider;
-    private final UsuarioService self;
-    private final WebHookService webHookService;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
-    public UsuarioService(
-            UsuarioRepository usuarioRepository,
-            RolService rolService,
-            TiendaService tiendaService,
-            PasswordEncoder passwordEncoder,
-            JwtService jwtService,
-            PasswordGenerator passwordGenerator,
-            EmailProvider emailProvider,
-            @Lazy UsuarioService self,
-            WebHookService webHookService) {
-        this.usuarioRepository = usuarioRepository;
-        this.rolService = rolService;
-        this.tiendaService = tiendaService;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.passwordGenerator = passwordGenerator;
-        this.emailProvider = emailProvider;
-        this.self = self;
-        this.webHookService = webHookService;
-    }
+    private RolService rolService;
 
-    // @Autowired
-    // private UsuarioRepository usuarioRepository;
+    @Autowired
+    private TiendaService tiendaService;
 
-    // @Autowired
-    // private RolService rolService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    // @Autowired
-    // private TiendaService tiendaService;
+    @Autowired
+    private JwtService jwtService;
 
-    // @Autowired
-    // private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordGenerator passwordGenerator;
 
-    // @Autowired
-    // private JwtService jwtService;
+    @Autowired
+    private EmailProvider emailProvider;
 
-    // @Autowired
-    // private PasswordGenerator passwordGenerator;
+    @Autowired
+    @Lazy
+    private UsuarioService self;
 
-    // @Autowired
-    // private EmailProvider emailProvider;
-
-    // @Autowired
-    // @Lazy
-    // private UsuarioService self;
-
-    // @Autowired
-    // private WebHookService webHookService;
+    @Autowired
+    private WebHookService webHookService;
     private final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     @Transactional

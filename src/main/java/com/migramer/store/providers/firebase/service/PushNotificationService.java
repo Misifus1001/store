@@ -1,12 +1,12 @@
-package com.migramer.store.firebase.service;
+package com.migramer.store.providers.firebase.service;
 
 import org.springframework.stereotype.Service;
 
 import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
-import com.migramer.store.firebase.model.PushNotificationRequest;
-import com.migramer.store.firebase.model.PushNotificationResponse;
+import com.migramer.store.providers.firebase.model.PushNotificationRequest;
+import com.migramer.store.providers.firebase.model.PushNotificationResponse;
 
 @Service
 public class PushNotificationService {

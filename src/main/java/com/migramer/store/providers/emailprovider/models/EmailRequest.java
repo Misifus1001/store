@@ -1,4 +1,4 @@
-package com.migramer.store.emailprovider.models;
+package com.migramer.store.providers.emailprovider.models;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

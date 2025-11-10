@@ -1,4 +1,4 @@
-package com.migramer.store.firebase.config;
+package com.migramer.store.providers.firebase.config;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

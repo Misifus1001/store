@@ -1,4 +1,4 @@
-package com.migramer.store.webhook;
+package com.migramer.store.providers.webhook;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.migramer.store.webhook.model.NameNotification;
-import com.migramer.store.webhook.model.WebHookSendResponse;
+import com.migramer.store.providers.webhook.model.NameNotification;
+import com.migramer.store.providers.webhook.model.WebHookSendResponse;
 
 @Service
 public class WebHookService {

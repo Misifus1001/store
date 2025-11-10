@@ -1,4 +1,4 @@
-package com.migramer.store.firebase.model;
+package com.migramer.store.providers.firebase.model;
 
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;

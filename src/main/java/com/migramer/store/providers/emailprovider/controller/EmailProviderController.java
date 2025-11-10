@@ -1,4 +1,4 @@
-package com.migramer.store.emailprovider.controller;
+package com.migramer.store.providers.emailprovider.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.migramer.store.emailprovider.models.EmailRequest;
-import com.migramer.store.emailprovider.models.EmailResponse;
-import com.migramer.store.emailprovider.models.TypeHtmlBody;
-import com.migramer.store.emailprovider.service.EmailProvider;
+import com.migramer.store.providers.emailprovider.models.EmailRequest;
+import com.migramer.store.providers.emailprovider.models.EmailResponse;
+import com.migramer.store.providers.emailprovider.models.TypeHtmlBody;
+import com.migramer.store.providers.emailprovider.service.EmailProvider;
 
 import jakarta.validation.Valid;
 

@@ -1,8 +1,8 @@
-package com.migramer.store.emailprovider.html;
+package com.migramer.store.providers.emailprovider.html;
 
 import org.springframework.stereotype.Component;
 
-import com.migramer.store.emailprovider.models.TypeHtmlBody;
+import com.migramer.store.providers.emailprovider.models.TypeHtmlBody;
 
 @Component
 public class HtmlBody {

@@ -1,4 +1,4 @@
-package com.migramer.store.webhook.config;
+package com.migramer.store.providers.webhook.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

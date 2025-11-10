@@ -1,4 +1,4 @@
-package com.migramer.store.webhook.model;
+package com.migramer.store.providers.webhook.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
