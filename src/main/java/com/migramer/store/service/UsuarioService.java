@@ -33,6 +33,7 @@ import com.migramer.store.models.UsuarioDto;
 // import com.migramer.store.providers.EmailProvider;
 import com.migramer.store.repository.UsuarioRepository;
 import com.migramer.store.webhook.WebHookService;
+import com.migramer.store.webhook.model.NameNotification;
 
 @Service
 public class UsuarioService {
@@ -198,13 +199,9 @@ public class UsuarioService {
         emailProvider.sendEmail(emailRequest, TypeHtmlBody.RESET_PASSWORD);
     }
 
-    private void notificateUser(String uuuidTienda) {
-        executeNotificateUser("usuario", uuuidTienda);
-    }
-
     @Async
-    private void executeNotificateUser(String endpoint, String uuuidTienda) {
-        webHookService.sendNotificationChanges(endpoint, uuuidTienda);
+    private void notificateUser(String uuuidTienda) {
+        webHookService.sendNotificationChanges(NameNotification.USUARIO, uuuidTienda);
     }
 
     public RecuperarPasswordResponse callReestablecerPassword(RecuperarPaswordRequest recuperarPasword) {

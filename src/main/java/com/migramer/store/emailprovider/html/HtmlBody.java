@@ -13,7 +13,7 @@ public class HtmlBody {
             case RESET_PASSWORD:
                 return getHTMLResetPassword(message);
             case SEND_WELCOME:
-                return getHTMLSendWelcome(message);
+                return getHTMLWelcomeEmail(message);
             default:
                 throw new RuntimeException("HTML no configurado");
         }
@@ -22,10 +22,67 @@ public class HtmlBody {
 
     protected String getHTMLResetPassword(String message) {
 
-        String htmlContent = """
-                <html>
+        String htmlContent = 
+            """ 
+                <html> 
+            """ +
+                stylesHTML() +
+            """
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <img src='cid:logoImage' alt="Logo">
+                            <h1>Restablecimiento de contraseña</h1>
+                        </div>
+                        <div class="content">
+                            <h2>Hola,</h2>
+                            <p class="message">%s</p>
+                        </div>
+                        <div class="footer">
+                            © %d - Todos los derechos reservados<br>
+                            Este correo fue generado automáticamente, no respondas a este mensaje.
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """.formatted(message, java.time.Year.now().getValue());
+        return htmlContent;
+    }
+
+    protected String getHTMLWelcomeEmail(String message) {
+
+        String htmlContent = 
+            """ 
+                <html> 
+            """ +
+                stylesHTML() +
+            """
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <img src='cid:logoImage' alt="Logo">
+                            <h1>¡Bienvenido!</h1>
+                        </div>
+                        <div class="content">
+                            <h2>Gracias por unirte a nuestra plataforma</h2>
+                            <p class="message">%s</p>
+                        </div>
+                        <div class="footer">
+                            © %d - Todos los derechos reservados<br>
+                            Este correo fue generado automáticamente, no respondas a este mensaje.
+                        </div>
+                    </div>
+                </body>
+                </html>
+            """.formatted(message, java.time.Year.now().getValue());
+        return htmlContent;
+    }
+
+    protected String stylesHTML() {
+        return """
                 <head>
                     <style>
+
                         body {
                             font-family: 'Segoe UI', Arial, sans-serif;
                             background-color: #f4f6f8;
@@ -57,12 +114,12 @@ public class HtmlBody {
                             color: #333333;
                         }
                         .content h2 {
-                            margin-bottom: 15px;
+                            margin-bottom: 10px;
                             color: #004aad;
                         }
                         .message {
                             font-size: 16px;
-                            line-height: 1.5;
+                            line-height: 1.6;
                             margin-bottom: 25px;
                         }
                         .footer {
@@ -80,37 +137,15 @@ public class HtmlBody {
                             padding: 12px 25px;
                             border-radius: 6px;
                             font-weight: 600;
+                            margin-top: 10px;
                         }
                         .button:hover {
                             background-color: #003b8e;
                         }
                     </style>
                 </head>
-                <body>
-                    <div class="container">
-                        <div class="header">
-                            <img src='cid:logoImage' alt="Logo">
-                            <h1>Restablecimiento de contraseña</h1>
-                        </div>
-                        <div class="content">
-                            <h2>Hola,</h2>
-                            <p class="message">%s</p>
-                        </div>
-                        <div class="footer">
-                            © %d - Todos los derechos reservados<br>
-                            Este correo fue generado automáticamente, no respondas a este mensaje.
-                        </div>
-                    </div>
-                </body>
-                </html>
-                """.formatted(message, java.time.Year.now().getValue());
-        return htmlContent;
-    }
 
-    protected String getHTMLSendWelcome(String message) {
-
-        return "";
-
+                """;
     }
 
 }

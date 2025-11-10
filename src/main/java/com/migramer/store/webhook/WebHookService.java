@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.migramer.store.webhook.model.NameNotification;
+import com.migramer.store.webhook.model.WebHookSendResponse;
+
 @Service
 public class WebHookService {
 
@@ -14,16 +17,24 @@ public class WebHookService {
 
     private final Logger logger = LoggerFactory.getLogger(WebHookService.class);
 
-    public void sendNotificationChanges(String endpoint, String uuidTienda) {
+    public void sendNotificationChanges(NameNotification nameNotification, String uuidTienda) {
+
+        String sendNotificationTo = nameNotification.getDescripcion();
+
         try {
-            template.convertAndSend(buildURL(endpoint, uuidTienda),"USUARIO ACTUALIZADO");
+            WebHookSendResponse webHookSendResponse = new WebHookSendResponse(buildMessage(sendNotificationTo, uuidTienda));
+            template.convertAndSend(buildURL(sendNotificationTo, uuidTienda), webHookSendResponse);
         } catch (Exception e) {
-            logger.error("ERROR notificando: " + endpoint, e);
+            logger.error("ERROR notificando: " + sendNotificationTo, e);
         }
     }
 
     protected String buildURL(String endpoint, String uuidTienda) {
         return "/" + "webhook" + "/" + endpoint + "?uuidTienda=" + uuidTienda;
+    }
+
+    protected String buildMessage(String message, String uuidTienda) {
+        return "CAMBIOS DETECTADOS EN:" + " " + message + " " + "PARA" + " " + "UUIDTIENDA:" + " " + uuidTienda;
     }
 
 }
