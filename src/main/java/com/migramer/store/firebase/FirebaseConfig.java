@@ -1,9 +1,11 @@
-package com.migramer.store.config;
+package com.migramer.store.firebase;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,18 +21,21 @@ public class FirebaseConfig {
     @Value("${firebase.config}")
     private String firebaseCredentialsJson;
 
+    private final Logger logger = LoggerFactory.getLogger(FirebaseConfig.class);
+
     @PostConstruct
     public void initFirebase() throws Exception {
-        
+
         if (FirebaseApp.getApps().isEmpty()) {
-            InputStream credentialsStream = new ByteArrayInputStream(firebaseCredentialsJson.getBytes(StandardCharsets.UTF_8));
+            InputStream credentialsStream = new ByteArrayInputStream(
+                    firebaseCredentialsJson.getBytes(StandardCharsets.UTF_8));
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(credentialsStream))
                     .build();
 
             FirebaseApp.initializeApp(options);
-            System.out.println("Firebase inicializado");
+            logger.info("Firebase inicializado");
         }
     }
 }
