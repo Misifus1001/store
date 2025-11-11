@@ -1,6 +1,7 @@
 package com.migramer.store.service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.migramer.store.components.UploadImageComponent;
 import com.migramer.store.entities.Producto;
 import com.migramer.store.entities.Tienda;
 import com.migramer.store.models.PaginacionResponse;
@@ -37,12 +39,19 @@ public class ProductosService {
     @Autowired
     private WebHookService webHookService;
 
+    @Autowired
+    private UploadImageComponent uploadImageComponent;
+
     private final Logger logger = LoggerFactory.getLogger(ProductosService.class);
 
     public ProductoDto saveProductoDto(ProductoDto productoDto) {
         Tienda tienda = tiendaService.getTiendaEntityByUUID(productoDto.getUuidTienda());
+
+        String urlImage = UUID.randomUUID().toString();
+        productoDto.setUrlImagen(urlImage);
         Producto producto = save(productoDto, tienda);
         notificateTiendaChangeProducts(productoDto.getUuidTienda());
+        saveImage(productoDto.getBase64Image(), urlImage);
         return productoToProductoDto(producto);
     }
 
@@ -50,17 +59,16 @@ public class ProductosService {
     private Producto save(ProductoDto productoDto, Tienda tienda) {
 
         logger.info("Entrando: save()");
-        logger.info("productoDto: {}",productoDto);
         Producto producto = new Producto();
         producto.setCodigoBarras(productoDto.getCodigoBarras());
         producto.setDescripcion(productoDto.getDescripcion());
-        producto.setEstatus(productoDto.getEstatus());
+        producto.setEstatus(true);
         producto.setFechaCreacion(LocalDateTime.now());
         producto.setPrecio(productoDto.getPrecio());
         producto.setStock(productoDto.getStock());
         producto.setUrlImagen(productoDto.getUrlImagen());
         producto.setTiendaForProducto(tienda);
-
+        producto.setUrlImagen(productoDto.getUrlImagen());
         productoRepository.save(producto);
 
         logger.info("Saliendo: save()");
@@ -68,12 +76,21 @@ public class ProductosService {
         return producto;
     }
 
-    private void notificateTiendaChangeProducts(String uuidTienda){
+    public void saveImage(String base64, String fileName){
+        self.executeSaveImage(base64, fileName);
+    }
+
+    @Async
+    public void executeSaveImage(String base64, String fileName){
+        uploadImageComponent.uploadImage(base64, fileName);
+    }
+
+    public void notificateTiendaChangeProducts(String uuidTienda){
         self.executeCotificateTiendaChangeProducts(uuidTienda);
     }
 
     @Async
-    private void executeCotificateTiendaChangeProducts(String uuidTienda){
+    public void executeCotificateTiendaChangeProducts(String uuidTienda){
         webHookService.sendNotificationChanges(NameNotification.PRODUCTOS, uuidTienda);
     }
 
