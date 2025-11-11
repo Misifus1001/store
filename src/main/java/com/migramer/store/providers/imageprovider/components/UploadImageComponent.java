@@ -35,7 +35,7 @@ public class UploadImageComponent {
 
             Files.write(filePath, imageBytes);
 
-            return fileName;
+            return fileName + ".jpeg";
         } catch (IOException e) {
             logger.error("ERROR AL GUARDAR LA IMAGEN", e);
             return null;
