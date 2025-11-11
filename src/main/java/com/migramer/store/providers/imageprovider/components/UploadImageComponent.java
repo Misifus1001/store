@@ -1,4 +1,4 @@
-package com.migramer.store.components;
+package com.migramer.store.providers.imageprovider.components;
 
 import java.io.*;
 import java.nio.file.Files;

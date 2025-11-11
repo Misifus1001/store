@@ -14,11 +14,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.migramer.store.components.UploadImageComponent;
 import com.migramer.store.entities.Producto;
 import com.migramer.store.entities.Tienda;
 import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.models.ProductoDto;
+import com.migramer.store.providers.imageprovider.components.UploadImageComponent;
 import com.migramer.store.providers.webhook.WebHookService;
 import com.migramer.store.providers.webhook.model.NameNotification;
 import com.migramer.store.repository.ProductoRepository;
