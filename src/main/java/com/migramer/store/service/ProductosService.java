@@ -47,11 +47,12 @@ public class ProductosService {
     public ProductoDto saveProductoDto(ProductoDto productoDto) {
         Tienda tienda = tiendaService.getTiendaEntityByUUID(productoDto.getUuidTienda());
 
-        String urlImage = UUID.randomUUID().toString();
+        String uuidName = UUID.randomUUID().toString();
+        String urlImage = "https://unkneaded-deepeningly-sandra.ngrok-free.dev/products/images/" + uuidName + ".jpeg";
         productoDto.setUrlImagen(urlImage);
         Producto producto = save(productoDto, tienda);
         notificateTiendaChangeProducts(productoDto.getUuidTienda());
-        saveImage(productoDto.getBase64Image(), urlImage);
+        saveImage(productoDto.getBase64Image(), uuidName);
         return productoToProductoDto(producto);
     }
 
@@ -76,21 +77,21 @@ public class ProductosService {
         return producto;
     }
 
-    public void saveImage(String base64, String fileName){
+    public void saveImage(String base64, String fileName) {
         self.executeSaveImage(base64, fileName);
     }
 
     @Async
-    public void executeSaveImage(String base64, String fileName){
+    public void executeSaveImage(String base64, String fileName) {
         uploadImageComponent.uploadImage(base64, fileName);
     }
 
-    public void notificateTiendaChangeProducts(String uuidTienda){
+    public void notificateTiendaChangeProducts(String uuidTienda) {
         self.executeCotificateTiendaChangeProducts(uuidTienda);
     }
 
     @Async
-    public void executeCotificateTiendaChangeProducts(String uuidTienda){
+    public void executeCotificateTiendaChangeProducts(String uuidTienda) {
         webHookService.sendNotificationChanges(NameNotification.PRODUCTOS, uuidTienda);
     }
 

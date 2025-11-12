@@ -32,7 +32,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**", "/api", "/api/**", "/topic/changes", "/public/saludar", "/ws/info", "/ws", "/ws/**", "/webhook", "/webhook/**")
+                        .requestMatchers("/auth/**", "/public/**", "/api", "/api/**", "/public/saludar")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/propietario/**").hasAnyRole("PROPIETARIO", "ADMIN")

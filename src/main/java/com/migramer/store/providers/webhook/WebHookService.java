@@ -30,7 +30,7 @@ public class WebHookService {
     }
 
     protected String buildURL(String endpoint, String uuidTienda) {
-        return "/" + "webhook" + "/" + endpoint + "?uuidTienda=" + uuidTienda;
+        return "/" + "webhook" + "/" + endpoint + "/" +  "uuidTienda" +"/" + uuidTienda;
     }
 
     protected String buildMessage(String message, String uuidTienda) {

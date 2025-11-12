@@ -31,11 +31,11 @@ public class UploadImageComponent {
 
             byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
-            Path filePath = Paths.get(UPLOAD_DIR + fileName + ".jpeg");
+            Path filePath = Paths.get(UPLOAD_DIR + fileName);
 
             Files.write(filePath, imageBytes);
 
-            return fileName + ".jpeg";
+            return fileName;
         } catch (IOException e) {
             logger.error("ERROR AL GUARDAR LA IMAGEN", e);
             return null;
