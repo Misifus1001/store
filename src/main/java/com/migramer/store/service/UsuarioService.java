@@ -198,6 +198,8 @@ public class UsuarioService {
         String rol = usuario.getRol().getNombre();
         Integer tiendaId = rol.equals("ADMIN") ? null : usuario.getTienda().getId();
 
+        String uuidTienda = usuario.getTienda().getUuid();
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("nombre", usuario.getNombre());
         claims.put("rol", rol);
@@ -208,6 +210,7 @@ public class UsuarioService {
         tokenResponse.setRol(rol);
         tokenResponse.setNombre(usuario.getNombre());
         tokenResponse.setTiendaId(tiendaId);
+        tokenResponse.setUuidTienda(uuidTienda);
         return tokenResponse;
     }
 

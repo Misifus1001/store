@@ -52,7 +52,7 @@ public class ProductosService {
         productoDto.setUrlImagen(urlImage);
         Producto producto = save(productoDto, tienda);
         notificateTiendaChangeProducts(productoDto.getUuidTienda());
-        saveImage(productoDto.getBase64Image(), uuidName);
+        saveImage(productoDto.getBase64Image(), uuidName + ".jpeg");
         return productoToProductoDto(producto);
     }
 

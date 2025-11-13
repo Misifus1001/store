@@ -27,9 +27,9 @@ public class UploadImageComponent {
                 directory.mkdirs();
             }
 
-            String base64Image = base64.split(",")[1];
+            // String base64Image = base64.split(",")[1];
 
-            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+            byte[] imageBytes = Base64.getDecoder().decode(base64);
 
             Path filePath = Paths.get(UPLOAD_DIR + fileName);
 

@@ -10,5 +10,6 @@ public class TokenResponse {
     private String token;
     private String rol;
     private Integer tiendaId;
+    private String uuidTienda;
     private String nombre;
 }
