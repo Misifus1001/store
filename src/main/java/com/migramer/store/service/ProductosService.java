@@ -136,7 +136,8 @@ public class ProductosService {
         productoDto.setFechaCreacion(producto.getFechaCreacion());
         productoDto.setPrecio(producto.getPrecio());
         productoDto.setStock(producto.getStock());
-        productoDto.setUrlImagen(producto.getUrlImagen());
+        productoDto.setUrlImagen(buildURL(producto.getUrlImagen()));
+        // productoDto.setUrlImagen(producto.getUrlImagen());
         productoDto.setUuidTienda(producto.getTiendaForProducto().getUuid());
 
         return productoDto;
@@ -147,4 +148,8 @@ public class ProductosService {
         return productoPage.map(producto -> productoToProductoDto(producto));
     }
 
+    private String buildURL(String baseURL){
+        String url = "http://localhost:8080" + "/products/images/" + baseURL;
+        return url;
+    }
 }
