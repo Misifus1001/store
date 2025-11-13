@@ -47,12 +47,12 @@ public class ProductosService {
     public ProductoDto saveProductoDto(ProductoDto productoDto) {
         Tienda tienda = tiendaService.getTiendaEntityByUUID(productoDto.getUuidTienda());
 
-        String uuidName = UUID.randomUUID().toString();
-        String urlImage = "https://unkneaded-deepeningly-sandra.ngrok-free.dev/products/images/" + uuidName + ".jpeg";
-        productoDto.setUrlImagen(urlImage);
+        String uuidName = UUID.randomUUID().toString() + ".jpeg";
+        // String urlImage = "https://unkneaded-deepeningly-sandra.ngrok-free.dev/products/images/" + uuidName + ".jpeg";
+        productoDto.setUrlImagen(uuidName);
         Producto producto = save(productoDto, tienda);
         notificateTiendaChangeProducts(productoDto.getUuidTienda());
-        saveImage(productoDto.getBase64Image(), uuidName + ".jpeg");
+        saveImage(productoDto.getBase64Image(), uuidName);
         return productoToProductoDto(producto);
     }
 
