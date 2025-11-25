@@ -1,18 +1,19 @@
 package com.migramer.store.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.migramer.store.entities.Tienda;
 import com.migramer.store.exceptions.ResourceNotFoundException;
+import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.models.TiendaDto;
 import com.migramer.store.repository.TiendaRepository;
 
@@ -25,15 +26,6 @@ public class TiendaService {
     private TiendaRepository tiendaRepository;
 
     private final Logger logger = LoggerFactory.getLogger(TiendaService.class);
-
-    private TiendaDto tiendaEntityToTiendaDto(Tienda tienda) {
-        TiendaDto tiendaDto = new TiendaDto();
-        tiendaDto.setNombre(tienda.getNombre());
-        tiendaDto.setUbicacion(tienda.getUbicacion());
-
-        return tiendaDto;
-
-    }
 
     @Transactional
     public TiendaDto save(TiendaDto tiendaDto) {
@@ -54,29 +46,45 @@ public class TiendaService {
         return tiendaEntityToTiendaDto(tienda);
     }
 
-    public List<TiendaDto> getTiendasDto() {
+    public PaginacionResponse getTiendaByPage(Integer page, Integer size) {
 
-        List<TiendaDto> tiendaDtoList = new ArrayList<>();
+        try {
+            PaginacionResponse paginacionResponse = new PaginacionResponse();
 
-        List<Tienda> tiendaList = tiendaRepository.findAll();
+            Pageable pageable = PageRequest.of(page, size);
 
-        for (Tienda tienda : tiendaList) {
+            Page<Tienda> tiendaPageList = tiendaRepository.findAll(pageable);
 
-            TiendaDto tiendaDto = tiendaEntityToTiendaDto(tienda);
-            tiendaDtoList.add(tiendaDto);
+            Page<TiendaDto> tiendaDtoPage = tiendaPageToTiendaDtoPage(tiendaPageList);
+
+            paginacionResponse.setItems(tiendaDtoPage.getContent());
+            paginacionResponse.setTotalItems(tiendaDtoPage.getTotalElements());
+            paginacionResponse.setTotalPages(tiendaDtoPage.getTotalPages());
+            paginacionResponse.setCurrentPage(tiendaDtoPage.getNumber());
+            paginacionResponse.setPreviousPage(
+                    tiendaDtoPage.getNumber() > 0 ? tiendaDtoPage.getNumber() - 1 : tiendaDtoPage.getNumber());
+            paginacionResponse.setNextPage(
+                    tiendaDtoPage.getNumber() + 1 < tiendaDtoPage.getTotalPages() ? tiendaDtoPage.getNumber() + 1
+                            : tiendaDtoPage.getNumber());
+
+            return paginacionResponse;
+        } catch (Exception e) {
+            logger.error("Ocurrió un error: {}", e);
+            throw new RuntimeException(e);
         }
-
-        return tiendaDtoList;
     }
 
     public TiendaDto getTiendaById(Integer id) {
 
-        TiendaDto tiendaDto = new TiendaDto();
-        Optional<Tienda> tienda = tiendaRepository.findById(id);
+        Tienda tienda = findTiendaById(id);
+        TiendaDto tiendaDto = tiendaEntityToTiendaDto(tienda);
+        return tiendaDto;
+    }
 
-        if (tienda.isPresent()) {
-            tiendaDto = tiendaEntityToTiendaDto(tienda.get());
-        }
+    private TiendaDto tiendaEntityToTiendaDto(Tienda tienda) {
+        TiendaDto tiendaDto = new TiendaDto();
+        tiendaDto.setNombre(tienda.getNombre());
+        tiendaDto.setUbicacion(tienda.getUbicacion());
 
         return tiendaDto;
     }
@@ -84,17 +92,6 @@ public class TiendaService {
     public Tienda findTiendaById(Integer id) {
         Tienda tienda = tiendaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tienda", id));
         return tienda;
-    }
-
-    public Tienda getTiendaEntityById(Integer id) {
-
-        logger.info("Entrando: getTiendaEntityById()");
-
-        Optional<Tienda> tienda = tiendaRepository.findById(id);
-
-        logger.info("Saliendo: getTiendaEntityById()");
-
-        return tienda.get();
     }
 
     public Tienda getTiendaEntityByUUID(String uuidTienda) {
@@ -109,6 +106,10 @@ public class TiendaService {
         }
 
         return tienda;
+    }
+
+    private Page<TiendaDto> tiendaPageToTiendaDtoPage(Page<Tienda> tiendaPage) {
+        return tiendaPage.map(producto -> tiendaEntityToTiendaDto(producto));
     }
 
 }
