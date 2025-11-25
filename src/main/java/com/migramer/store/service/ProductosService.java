@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.migramer.store.entities.Producto;
 import com.migramer.store.entities.Tienda;
+import com.migramer.store.exceptions.BusinessException;
 import com.migramer.store.exceptions.ResourceNotFoundException;
 import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.models.ProductoDto;
@@ -47,6 +48,9 @@ public class ProductosService {
 
     public ProductoDto saveProductoDto(ProductoDto productoDto) {
         Tienda tienda = tiendaService.getTiendaEntityByUUID(productoDto.getUuidTienda());
+
+        validarProductoExistente(productoDto.getCodigoBarras(),true, tienda);
+
         String uuidName = UUID.randomUUID().toString() + ".jpeg";
         productoDto.setUrlImagen(uuidName);
         Producto producto = save(productoDto, tienda);
@@ -90,6 +94,17 @@ public class ProductosService {
     public Producto findByCodigoBarrasAndEstatusAndTiendaForProducto(String barcode,Boolean estatus, Tienda tienda) {
         return productoRepository.findTop1ByCodigoBarrasAndEstatusAndTiendaForProducto(barcode,estatus, tienda)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", barcode));
+    }
+    
+
+    private void validarProductoExistente(String barcode,Boolean estatus, Tienda tienda){
+
+        Producto producto = findByCodigoBarrasAndEstatusAndTiendaForProducto(barcode, estatus, tienda);
+
+        if (producto != null) {
+            throw new BusinessException("Ya existe un producto con ese código de barras");
+        }
+
     }
 
     public void saveImage(String base64, String fileName) {
