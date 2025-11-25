@@ -24,7 +24,6 @@ public class ProductosController {
     @Autowired
     private ProductosService productosService;
 
-    @PreAuthorize("hasRole('PROPIETARIO') or hasRole('ADMIN')")
     @PostMapping("/guardar")
     public ResponseEntity<ProductoDto> saveProductoDto(@Valid @RequestBody ProductoDto productoDto) {
         return ResponseEntity.ok(productosService.saveProductoDto(productoDto));
