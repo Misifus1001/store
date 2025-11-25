@@ -31,6 +31,7 @@ public class TiendaController {
         return ResponseEntity.ok(tiendaService.save(tiendaDto));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public PaginacionResponse getTiendas(
             @RequestParam(required = false, defaultValue = "0") Integer page,
