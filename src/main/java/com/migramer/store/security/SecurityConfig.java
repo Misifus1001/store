@@ -32,16 +32,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**", "/api", "/api/**", "/public/saludar","/products/images/**")
+                        .requestMatchers("/auth/**", "/public/**", "/products/images/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/propietario/**").hasAnyRole("PROPIETARIO", "ADMIN")
                         .requestMatchers("/tiendas", "/tiendas/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/vendedor/**").hasAnyRole("VENDEDOR", "PROPIETARIO", "ADMIN")
                         .requestMatchers("/productos/guardar", "/productos/actualizar", "/productos/eliminar")
                         .hasAnyRole("PROPIETARIO", "ADMIN")
-                        .requestMatchers("/productos/**").hasAnyRole("VENDEDOR", "PROPIETARIO", "ADMIN")
-                        .requestMatchers("/ventas/**").hasAnyRole("VENDEDOR", "PROPIETARIO", "ADMIN")
+                        .requestMatchers("/ventas/**").hasAnyRole("PROPIETARIO", "ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthenticationEntryPoint)

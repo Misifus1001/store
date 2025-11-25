@@ -42,13 +42,13 @@ public class ReportsGeneratorService {
         return jasperGeneratorService.generarUrlUbicacionArchivo(nombreCarpeta, "ReporteVentas");
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void probar() {
+    // @EventListener(ApplicationReadyEvent.class)
+    // public void probar() {
 
-        RequestReporteVentas reporteVentas = new RequestReporteVentas();
-        reporteVentas.setMyProperti("algo");
-        reporteVentas.setNombreArchivo("archivoTemporal");
-        generarArchivoReporteVentas(reporteVentas);
-    }
+    //     RequestReporteVentas reporteVentas = new RequestReporteVentas();
+    //     reporteVentas.setMyProperti("algo");
+    //     reporteVentas.setNombreArchivo("archivoTemporal");
+    //     generarArchivoReporteVentas(reporteVentas);
+    // }
 
 }
