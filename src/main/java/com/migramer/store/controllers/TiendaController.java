@@ -25,13 +25,11 @@ public class TiendaController {
     @Autowired
     private TiendaService tiendaService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<TiendaDto> registrarTienda(@Valid @RequestBody TiendaDto tiendaDto) {
         return ResponseEntity.ok(tiendaService.save(tiendaDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public PaginacionResponse getTiendas(
             @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -39,7 +37,6 @@ public class TiendaController {
         return tiendaService.getTiendaByPage(page, size);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public TiendaDto getTiendaById(@PathVariable("id") Integer id) {
         return tiendaService.getTiendaById(id);
