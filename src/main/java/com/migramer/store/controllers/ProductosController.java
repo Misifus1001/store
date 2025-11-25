@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/productos")
 public class ProductosController {
@@ -34,9 +33,16 @@ public class ProductosController {
     @GetMapping
     public PaginacionResponse getProductsByTienda(
             @RequestParam String uuidTienda,
-            @RequestParam(required = false, defaultValue = "0") Integer page, 
+            @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "5") Integer size) {
         return productosService.getProductsByPageAndTienda(uuidTienda, page, size);
+    }
+
+    @GetMapping("/search")
+    public ProductoDto getProductByBarcodeAndUuidTienda(
+            @RequestParam String uuidTienda,
+            @RequestParam String barcode) {
+        return productosService.getProductByBarcodeAndUuidTienda(uuidTienda, barcode);
     }
 
 }

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.migramer.store.entities.Producto;
 import com.migramer.store.entities.Tienda;
+import com.migramer.store.exceptions.ResourceNotFoundException;
 import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.models.ProductoDto;
 import com.migramer.store.providers.imageprovider.components.UploadImageComponent;
@@ -46,9 +47,7 @@ public class ProductosService {
 
     public ProductoDto saveProductoDto(ProductoDto productoDto) {
         Tienda tienda = tiendaService.getTiendaEntityByUUID(productoDto.getUuidTienda());
-
         String uuidName = UUID.randomUUID().toString() + ".jpeg";
-        // String urlImage = "https://unkneaded-deepeningly-sandra.ngrok-free.dev/products/images/" + uuidName + ".jpeg";
         productoDto.setUrlImagen(uuidName);
         Producto producto = save(productoDto, tienda);
         notificateTiendaChangeProducts(productoDto.getUuidTienda());
@@ -75,6 +74,22 @@ public class ProductosService {
         logger.info("Saliendo: save()");
 
         return producto;
+    }
+
+    public ProductoDto getProductByBarcodeAndUuidTienda(String uuidTienda, String barcode) {
+
+        Tienda tienda = tiendaService.getTiendaEntityByUUID(uuidTienda);
+
+        Producto productoFind = findByCodigoBarrasAndEstatusAndTiendaForProducto(barcode,true, tienda);
+
+        ProductoDto productoDto = productoToProductoDto(productoFind);
+
+        return productoDto;
+    }
+
+    public Producto findByCodigoBarrasAndEstatusAndTiendaForProducto(String barcode,Boolean estatus, Tienda tienda) {
+        return productoRepository.findTop1ByCodigoBarrasAndEstatusAndTiendaForProducto(barcode,estatus, tienda)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", barcode));
     }
 
     public void saveImage(String base64, String fileName) {
@@ -148,7 +163,7 @@ public class ProductosService {
         return productoPage.map(producto -> productoToProductoDto(producto));
     }
 
-    private String buildURL(String baseURL){
+    private String buildURL(String baseURL) {
         String url = "https://unkneaded-deepeningly-sandra.ngrok-free.dev" + "/products/images/" + baseURL;
         // String url = "http://localhost:8080" + "/products/images/" + baseURL;
         return url;
