@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import com.migramer.store.entities.Usuario;
 import com.migramer.store.exceptions.BusinessException;
 import com.migramer.store.exceptions.ResourceNotFoundException;
 import com.migramer.store.models.ChangePasswordRequest;
+import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.models.RecuperarPasswordResponse;
 import com.migramer.store.models.RecuperarPaswordRequest;
 import com.migramer.store.models.TokenRequest;
@@ -101,7 +105,8 @@ public class UsuarioService {
 
     public TokenResponse registrarUsuario(UsuarioDto usuarioDto, String rolSolicitado, Integer tiendaIdUsuarioActual) {
         guardarUsuario(usuarioDto, rolSolicitado, tiendaIdUsuarioActual);
-        return generarTokenResponse(usuarioDto.getEmail(), usuarioDto.getNombre(), rolSolicitado, usuarioDto.getIdTienda());
+        return generarTokenResponse(usuarioDto.getEmail(), usuarioDto.getNombre(), rolSolicitado,
+                usuarioDto.getIdTienda());
     }
 
     public Usuario getUsuarioByEmail(String email) {
@@ -120,6 +125,47 @@ public class UsuarioService {
         }
 
         return generarTokenResponse(usuario);
+    }
+
+    public PaginacionResponse getEmpleadosByTienda(Integer page, Integer size, String uuidTienda ){
+        return getUsuariosByTiendaAndRol(page, size, "VENDEDOR", uuidTienda);
+    }
+
+    public PaginacionResponse getAllUsersByTienda(Integer page, Integer size, String uuidTienda ){
+        return getUsuariosByTiendaAndRol(page, size, "PROPIETARIO", uuidTienda);
+    }
+
+    public PaginacionResponse getUsuariosByTiendaAndRol(Integer page, Integer size, String rolName, String uuidTienda) {
+
+        try {
+
+            Tienda tienda = tiendaService.getTiendaEntityByUUID(uuidTienda);
+
+            Rol rol = rolService.getRolByName(rolName);
+
+            PaginacionResponse paginacionResponse = new PaginacionResponse();
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<Usuario> usuarioPage = usuarioRepository.findAllByTiendaAndRol(tienda, rol, pageable);
+
+            Page<UsuarioDto> usuarioDtoPage = usuarioPageToUsuarioDtoPage(usuarioPage);
+
+            paginacionResponse.setItems(usuarioDtoPage.getContent());
+            paginacionResponse.setTotalItems(usuarioDtoPage.getTotalElements());
+            paginacionResponse.setTotalPages(usuarioDtoPage.getTotalPages());
+            paginacionResponse.setCurrentPage(usuarioDtoPage.getNumber());
+            paginacionResponse.setPreviousPage(
+                    usuarioDtoPage.getNumber() > 0 ? usuarioDtoPage.getNumber() - 1 : usuarioDtoPage.getNumber());
+            paginacionResponse.setNextPage(
+                    usuarioDtoPage.getNumber() + 1 < usuarioDtoPage.getTotalPages() ? usuarioDtoPage.getNumber() + 1
+                            : usuarioDtoPage.getNumber());
+
+            return paginacionResponse;
+        } catch (Exception e) {
+            logger.error("Ocurrió un error: {}", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
@@ -188,6 +234,18 @@ public class UsuarioService {
         }
     }
 
+    private Page<UsuarioDto> usuarioPageToUsuarioDtoPage(Page<Usuario> usuarioPage) {
+        return usuarioPage.map(usuario -> usuarioToUsuarioDto(usuario));
+    }
+
+    private UsuarioDto usuarioToUsuarioDto(Usuario usuario) {
+        UsuarioDto usuarioDto = new UsuarioDto();
+        usuarioDto.setNombre(usuario.getNombre());
+        usuarioDto.setEmail(usuario.getEmail());
+
+        return usuarioDto;
+    }
+
     private boolean esAdmin(Integer usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", usuarioId));
@@ -203,7 +261,8 @@ public class UsuarioService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("nombre", usuario.getNombre());
         claims.put("rol", rol);
-        if (tiendaId != null) claims.put("tiendaId", tiendaId);
+        if (tiendaId != null)
+            claims.put("tiendaId", tiendaId);
 
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken(jwtService.generateToken(usuario.getEmail(), claims));
@@ -218,7 +277,8 @@ public class UsuarioService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("nombre", nombre);
         claims.put("rol", rol);
-        if (!"ADMIN".equals(rol)) claims.put("tiendaId", tiendaId);
+        if (!"ADMIN".equals(rol))
+            claims.put("tiendaId", tiendaId);
 
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken(jwtService.generateToken(email, claims));

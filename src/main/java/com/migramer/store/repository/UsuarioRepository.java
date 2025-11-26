@@ -2,13 +2,16 @@ package com.migramer.store.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 // import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.migramer.store.entities.Usuario;
-
+import com.migramer.store.entities.Rol;
+import com.migramer.store.entities.Tienda;
 // import jakarta.transaction.Transactional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
@@ -23,4 +26,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     // public void changePassword(@Param("password") String password, @Param("id") Integer id);
 
     long countByRolNombreAndTiendaId(String rolNombre, Integer tiendaId);
+
+    Page<Usuario> findAllByRol(Rol rol, Pageable pageable);
+
+    Page<Usuario> findAllByTiendaAndRol(Tienda tienda, Rol rol,Pageable pageable);
+
 }

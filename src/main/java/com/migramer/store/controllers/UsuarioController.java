@@ -2,7 +2,6 @@ package com.migramer.store.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,12 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.migramer.store.models.ChangePasswordRequest;
+import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.models.TokenResponse;
 import com.migramer.store.models.UsuarioDto;
 import com.migramer.store.security.CustomUserDetails;
 import com.migramer.store.service.UsuarioService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -31,7 +33,6 @@ public class UsuarioController {
         return ResponseEntity.ok(tokenResponse);
     }
 
-    @PreAuthorize("hasRole('PROPIETARIO') or hasRole('ADMIN')")
     @PostMapping("/registrar/vendedor")
     public ResponseEntity<TokenResponse> registrarVendedor(
             @Valid @RequestBody UsuarioDto usuarioDto,
@@ -40,7 +41,6 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.registrarUsuario(usuarioDto, "VENDEDOR", tiendaIdUsuarioActual));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/registrar/propietario")
     public ResponseEntity<TokenResponse> registrarPropietario(
             @Valid @RequestBody UsuarioDto usuarioDto,
@@ -48,4 +48,21 @@ public class UsuarioController {
         Integer tiendaIdUsuarioActual = userDetails.getTiendaId();
         return ResponseEntity.ok(usuarioService.registrarUsuario(usuarioDto, "PROPIETARIO", tiendaIdUsuarioActual));
     }
+
+    @GetMapping("/empleados")
+    public PaginacionResponse getEmpleados(
+            @RequestParam String uuidTienda,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "5") Integer size) {
+        return usuarioService.getEmpleadosByTienda(page, size, uuidTienda);
+    }
+
+    @GetMapping("/propietarios")
+    public PaginacionResponse getPropietarios(
+            @RequestParam String uuidTienda,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "5") Integer size) {
+        return usuarioService.getAllUsersByTienda(page, size, uuidTienda);
+    }
+
 }

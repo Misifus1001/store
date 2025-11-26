@@ -27,6 +27,22 @@ public class SecurityConfig {
         this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
+    private String[] urlsAdmin = new String[]{
+        "/admin/**",
+        "/usuarios/registrar/propietario",
+        "/usuarios/propietarios"
+    };
+
+    private String[] urlAdminAndPropietarios = new String[]{
+        "/usuarios/registrar/vendedor",
+        "/usuarios/empleados",
+        "/propietario/**",
+        "/productos/guardar",
+        "/productos/actualizar",
+        "/productos/eliminar",
+        "/ventas/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -34,12 +50,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/public/**", "/products/images/**")
                         .permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/propietario/**").hasAnyRole("PROPIETARIO", "ADMIN")
-                        .requestMatchers("/tiendas", "/tiendas/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/productos/guardar", "/productos/actualizar", "/productos/eliminar")
-                        .hasAnyRole("PROPIETARIO", "ADMIN")
-                        .requestMatchers("/ventas/**").hasAnyRole("PROPIETARIO", "ADMIN")
+                        .requestMatchers(urlsAdmin).hasRole("ADMIN")
+                        .requestMatchers(urlAdminAndPropietarios).hasAnyRole("ADMIN","PROPIETARIO")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
