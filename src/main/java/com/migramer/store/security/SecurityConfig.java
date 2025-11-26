@@ -27,6 +27,12 @@ public class SecurityConfig {
         this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
+    private String[] urlsPublicas = new String[]{
+        "/auth/**",
+        "/public/**", 
+        "/products/images/**"
+    };
+
     private String[] urlsAdmin = new String[]{
         "/admin/**",
         "/usuarios/registrar/propietario",
@@ -48,7 +54,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**", "/products/images/**")
+                        .requestMatchers(urlsPublicas)
                         .permitAll()
                         .requestMatchers(urlsAdmin).hasRole("ADMIN")
                         .requestMatchers(urlAdminAndPropietarios).hasAnyRole("ADMIN","PROPIETARIO")
