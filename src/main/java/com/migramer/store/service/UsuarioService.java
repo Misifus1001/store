@@ -3,6 +3,7 @@ package com.migramer.store.service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,11 +71,12 @@ public class UsuarioService {
     private final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     @Transactional
-    public void guardarUsuario(UsuarioDto usuarioDto, String rolSolicitado, Integer tiendaIdUsuarioActual) {
-        Rol rol = rolService.getRolByName(rolSolicitado);
-        Tienda tienda = tiendaService.findTiendaById(usuarioDto.getIdTienda());
+    public void guardarUsuario(UsuarioDto usuarioDto, String rolSolicitado, String uuidTienda) {
 
-        validarCreacionUsuario(usuarioDto, rolSolicitado, tiendaIdUsuarioActual);
+        validarUsuarioExistente(usuarioDto.getEmail());
+
+        Rol rol = rolService.getRolByName(rolSolicitado);
+        Tienda tienda = tiendaService.getTiendaEntityByUUID(uuidTienda);
 
         Usuario usuario = new Usuario();
         usuario.setNombre(usuarioDto.getNombre());
@@ -88,25 +90,17 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    private void validarCreacionUsuario(UsuarioDto usuarioDto, String rolSolicitado, Integer tiendaIdUsuarioActual) {
-        if (rolSolicitado.equals("PROPIETARIO") && !esAdmin(tiendaIdUsuarioActual)) {
-            throw new BusinessException("Solo los administradores pueden crear propietarios de tienda");
-        }
+    private void validarUsuarioExistente(String email) {
+        Optional<Usuario> usuarioFind = usuarioRepository.findByEmail(email);
 
-        if (rolSolicitado.equals("PROPIETARIO")
-                && usuarioRepository.existsPropietarioByTiendaId(usuarioDto.getIdTienda())) {
-            throw new BusinessException("Ya existe un dueño para esta tienda");
-        }
-
-        if (usuarioRepository.findByEmail(usuarioDto.getEmail()).isPresent()) {
-            throw new BusinessException("El email ya está registrado");
+        if (usuarioFind.isPresent()) {
+            throw new BusinessException("Ya existe un usuario asociado a ese correo");
         }
     }
 
-    public TokenResponse registrarUsuario(UsuarioDto usuarioDto, String rolSolicitado, Integer tiendaIdUsuarioActual) {
-        guardarUsuario(usuarioDto, rolSolicitado, tiendaIdUsuarioActual);
-        return generarTokenResponse(usuarioDto.getEmail(), usuarioDto.getNombre(), rolSolicitado,
-                usuarioDto.getIdTienda());
+    public TokenResponse registrarUsuario(UsuarioDto usuarioDto, String rolSolicitado, String uuidTienda) {
+        guardarUsuario(usuarioDto, rolSolicitado, uuidTienda);
+        return generarTokenResponse(usuarioDto.getEmail(), usuarioDto.getNombre(), rolSolicitado, uuidTienda);
     }
 
     public Usuario getUsuarioByEmail(String email) {
@@ -124,14 +118,16 @@ public class UsuarioService {
             throw new BusinessException("Usuario deshabilitado");
         }
 
-        return generarTokenResponse(usuario);
+        return generarTokenResponse(usuario.getEmail(), usuario.getNombre(), usuario.getRol().getNombre(),
+                usuario.getTienda().getUuid());
+
     }
 
-    public PaginacionResponse getEmpleadosByTienda(Integer page, Integer size, String uuidTienda ){
+    public PaginacionResponse getEmpleadosByTienda(Integer page, Integer size, String uuidTienda) {
         return getUsuariosByTiendaAndRol(page, size, "VENDEDOR", uuidTienda);
     }
 
-    public PaginacionResponse getAllUsersByTienda(Integer page, Integer size, String uuidTienda ){
+    public PaginacionResponse getAllUsersByTienda(Integer page, Integer size, String uuidTienda) {
         return getUsuariosByTiendaAndRol(page, size, "PROPIETARIO", uuidTienda);
     }
 
@@ -218,8 +214,8 @@ public class UsuarioService {
 
         usuario.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         actualizarUsuario(usuario);
-
-        return generarTokenResponse(usuario);
+        return generarTokenResponse(usuario.getEmail(), usuario.getNombre(), usuario.getRol().getNombre(),
+                usuario.getTienda().getUuid());
     }
 
     private void validarCambioPassword(ChangePasswordRequest changePasswordRequest, Usuario usuario) {
@@ -246,44 +242,15 @@ public class UsuarioService {
         return usuarioDto;
     }
 
-    private boolean esAdmin(Integer usuarioId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", usuarioId));
-        return "ADMIN".equals(usuario.getRol().getNombre());
-    }
-
-    private TokenResponse generarTokenResponse(Usuario usuario) {
-        String rol = usuario.getRol().getNombre();
-        Integer tiendaId = rol.equals("ADMIN") ? null : usuario.getTienda().getId();
-
-        String uuidTienda = usuario.getTienda().getUuid();
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("nombre", usuario.getNombre());
-        claims.put("rol", rol);
-        if (tiendaId != null)
-            claims.put("tiendaId", tiendaId);
-
-        TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setToken(jwtService.generateToken(usuario.getEmail(), claims));
-        tokenResponse.setRol(rol);
-        tokenResponse.setNombre(usuario.getNombre());
-        tokenResponse.setTiendaId(tiendaId);
-        tokenResponse.setUuidTienda(uuidTienda);
-        return tokenResponse;
-    }
-
-    private TokenResponse generarTokenResponse(String email, String nombre, String rol, Integer tiendaId) {
+    private TokenResponse generarTokenResponse(String email, String nombre, String rol, String uuidTienda) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("nombre", nombre);
         claims.put("rol", rol);
-        if (!"ADMIN".equals(rol))
-            claims.put("tiendaId", tiendaId);
 
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken(jwtService.generateToken(email, claims));
         tokenResponse.setRol(rol);
-        tokenResponse.setTiendaId(tiendaId);
+        tokenResponse.setUuidTienda(uuidTienda);
         tokenResponse.setNombre(nombre);
         return tokenResponse;
     }
