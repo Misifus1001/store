@@ -50,10 +50,10 @@ public class UsuarioController {
 
     @GetMapping("/empleados")
     public PaginacionResponse getEmpleados(
-            @RequestParam String uuidTienda,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "5") Integer size) {
-        return usuarioService.getEmpleadosByTienda(page, size, uuidTienda);
+        return usuarioService.getEmpleadosByTienda(page, size, userDetails.getUuidTienda());
     }
 
     @GetMapping("/propietarios")
