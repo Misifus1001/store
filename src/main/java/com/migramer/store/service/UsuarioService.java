@@ -236,6 +236,7 @@ public class UsuarioService {
 
     private UsuarioDto usuarioToUsuarioDto(Usuario usuario) {
         UsuarioDto usuarioDto = new UsuarioDto();
+        usuarioDto.setId(usuario.getId());
         usuarioDto.setNombre(usuario.getNombre());
         usuarioDto.setEmail(usuario.getEmail());
 

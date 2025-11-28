@@ -40,4 +40,7 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuarioForCarrito", fetch = FetchType.LAZY)
     private List<Carrito> carritoList;
+
+    // @OneToOne(cascade = CascadeType.ALL)
+    // private FirebaseToken
 }

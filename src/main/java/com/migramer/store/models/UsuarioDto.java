@@ -1,12 +1,19 @@
 package com.migramer.store.models;
 
 import lombok.Data;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+// import jakarta.validation.constraints.Pattern;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UsuarioDto {
+
+    private Integer id;
+
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
     
