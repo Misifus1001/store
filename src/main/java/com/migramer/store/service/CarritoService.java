@@ -18,6 +18,8 @@ import com.migramer.store.models.AddToCarritoRequest;
 import com.migramer.store.models.MessageResponse;
 import com.migramer.store.repository.CarritoRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class CarritoService {
 
@@ -69,6 +71,7 @@ public class CarritoService {
         return carritoRepository.findTop1ByProductoForCarritoAndUsuarioForCarrito(producto, usuario);
     }
 
+    @Transactional
     public void saveShoppingCart(Integer cantidad, Producto producto, Usuario usuario) {
 
         Optional<Carrito> carrOptional = findByProductoForCarritoAndUsuarioForCarrito(producto, usuario);
@@ -76,11 +79,8 @@ public class CarritoService {
         if (carrOptional.isPresent()) {
 
             logger.info("YA HAY UN PRODUCTO AGREGADO");
-
             return;
         }
-
-        logger.info("PRODUCTO AGREGADO");
 
         Carrito carrito = new Carrito();
         carrito.setCantidad(cantidad);
@@ -89,7 +89,6 @@ public class CarritoService {
         carrito.setFechaCreacion(LocalDateTime.now());
         carrito.setUsuarioForCarrito(usuario);
         carritoRepository.save(carrito);
-
     }
 
 }

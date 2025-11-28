@@ -131,3 +131,16 @@ databaseChangeLog:
               fecha_creacion TIMESTAMP NOT NULL,
               activo BOOLEAN NOT NULL
             );
+  - changeSet:
+      id: 28-11-2025_16:33-firebase_token
+      author: roberto.cruz
+      changes:
+        - sql:
+            CREATE TABLE firebase_entity_token(
+              id SERIAL PRIMARY KEY,
+              token VARCHAR(800) NOT NULL,
+              fecha_creacion TIMESTAMP NOT NULL,
+              fk_usuario INTEGER NOT NULL,
+              activo BOOLEAN NOT NULL,
+              FOREIGN KEY (fk_usuario) REFERENCES usuario(id)
+            );
