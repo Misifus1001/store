@@ -19,8 +19,8 @@ public class AddToCarritoRequest {
     @Min(value = 1, message = "El stock no puede ser negativo ni menor a 0")
     private Integer cantidad;
 
-    @NotBlank(message = "El UUID de la tienda es obligatorio")
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "El formato del UUID de la tienda es incorrecto")
-    private String uuidTienda;
+    // @NotBlank(message = "El UUID de la tienda es obligatorio")
+    // @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "El formato del UUID de la tienda es incorrecto")
+    // private String uuidTienda;
     
 }

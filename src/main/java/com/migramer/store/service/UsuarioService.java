@@ -246,6 +246,7 @@ public class UsuarioService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("nombre", nombre);
         claims.put("rol", rol);
+        claims.put("uuidTienda", uuidTienda);
 
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken(jwtService.generateToken(email, claims));

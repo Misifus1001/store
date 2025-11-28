@@ -2,6 +2,7 @@ package com.migramer.store.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import com.migramer.store.models.ChangePasswordRequest;
 import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.models.TokenResponse;
 import com.migramer.store.models.UsuarioDto;
+import com.migramer.store.security.CustomUserDetails;
 import com.migramer.store.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -25,19 +27,25 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping("/change-password")
-    public ResponseEntity<TokenResponse> saveNewPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<TokenResponse> saveNewPassword(
+            @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         TokenResponse tokenResponse = usuarioService.changePassword(changePasswordRequest);
         return ResponseEntity.ok(tokenResponse);
     }
 
     @PostMapping("/registrar/vendedor")
-    public ResponseEntity<TokenResponse> registrarVendedor(@Valid @RequestBody UsuarioDto usuarioDto) {
-        return ResponseEntity.ok(usuarioService.registrarUsuario(usuarioDto, "VENDEDOR", usuarioDto.getUuidTienda()));
+    public ResponseEntity<TokenResponse> registrarVendedor(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UsuarioDto usuarioDto) {
+        return ResponseEntity.ok(usuarioService.registrarUsuario(usuarioDto, "VENDEDOR", userDetails.getUuidTienda()));
     }
 
     @PostMapping("/registrar/propietario")
-    public ResponseEntity<TokenResponse> registrarPropietario(@Valid @RequestBody UsuarioDto usuarioDto) {
-        return ResponseEntity.ok(usuarioService.registrarUsuario(usuarioDto, "PROPIETARIO", usuarioDto.getUuidTienda()));
+    public ResponseEntity<TokenResponse> registrarPropietario(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UsuarioDto usuarioDto) {
+        return ResponseEntity
+                .ok(usuarioService.registrarUsuario(usuarioDto, "PROPIETARIO", userDetails.getUuidTienda()));
     }
 
     @GetMapping("/empleados")

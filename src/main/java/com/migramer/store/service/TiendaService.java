@@ -108,6 +108,12 @@ public class TiendaService {
         return tienda;
     }
 
+    public void validarTiendaExistente(Tienda tienda){
+        if (!tienda.getEstatus()) {
+            throw new ResourceNotFoundException("Tienda", tienda.getId());
+        }
+    }
+
     private Page<TiendaDto> tiendaPageToTiendaDtoPage(Page<Tienda> tiendaPage) {
         return tiendaPage.map(producto -> tiendaEntityToTiendaDto(producto));
     }

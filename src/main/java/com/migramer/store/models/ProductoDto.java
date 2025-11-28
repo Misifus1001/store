@@ -47,9 +47,9 @@ public class ProductoDto {
     private Boolean estatus;
     private LocalDateTime fechaCreacion;
 
-    @NotBlank(message = "El UUID de la tienda es obligatorio")
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "El formato del UUID de la tienda es incorrecto")
-    private String uuidTienda;
+    // @NotBlank(message = "El UUID de la tienda es obligatorio")
+    // @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "El formato del UUID de la tienda es incorrecto")
+    // private String uuidTienda;
 
     @NotNull(message = "La imagen en Base64 no puede ser nula.")
     @NotBlank(message = "La imagen en Base64 no puede estar vacía.")

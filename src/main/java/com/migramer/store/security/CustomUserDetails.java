@@ -58,6 +58,10 @@ public class CustomUserDetails implements UserDetails {
     public Integer getTiendaId() {
         return usuario.getTienda().getId();
     }
+
+    public String getUuidTienda() {
+        return usuario.getTienda().getUuid();
+    }
     
     public String getRol() {
         return usuario.getRol().getNombre();

@@ -1,6 +1,7 @@
 package com.migramer.store.entities;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -33,10 +34,10 @@ public class Usuario {
     @JoinColumn(name = "fk_rol", nullable = false)
     private Rol rol;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "fk_tienda", nullable = true)
     private Tienda tienda;
 
-    // @OneToMany(mappedBy = "vendedor", fetch = FetchType.LAZY)
-    // private List<Venta> ventas;
+    @OneToMany(mappedBy = "usuarioForCarrito", fetch = FetchType.LAZY)
+    private List<Carrito> carritoList;
 }

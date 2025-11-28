@@ -46,15 +46,15 @@ public class ProductosService {
 
     private final Logger logger = LoggerFactory.getLogger(ProductosService.class);
 
-    public ProductoDto saveProductoDto(ProductoDto productoDto) {
-        Tienda tienda = tiendaService.getTiendaEntityByUUID(productoDto.getUuidTienda());
+    public ProductoDto saveProductoDto(ProductoDto productoDto, String uuidTienda) {
+        Tienda tienda = tiendaService.getTiendaEntityByUUID(uuidTienda);
 
         validarProductoExistente(productoDto.getCodigoBarras(),true, tienda);
 
         String uuidName = UUID.randomUUID().toString() + ".jpeg";
         productoDto.setUrlImagen(uuidName);
         Producto producto = save(productoDto, tienda);
-        notificateTiendaChangeProducts(productoDto.getUuidTienda());
+        notificateTiendaChangeProducts(uuidTienda);
         saveImage(productoDto.getBase64Image(), uuidName);
         return productoToProductoDto(producto);
     }
@@ -168,7 +168,7 @@ public class ProductosService {
         productoDto.setStock(producto.getStock());
         productoDto.setUrlImagen(buildURL(producto.getUrlImagen()));
         // productoDto.setUrlImagen(producto.getUrlImagen());
-        productoDto.setUuidTienda(producto.getTiendaForProducto().getUuid());
+        // productoDto.setUuidTienda(producto.getTiendaForProducto().getUuid());
 
         return productoDto;
     }

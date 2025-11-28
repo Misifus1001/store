@@ -50,3 +50,18 @@ databaseChangeLog:
         - sql:
             ALTER TABLE carrito
             ALTER COLUMN fk_venta DROP NOT NULL;
+  - changeSet:
+      id: 2025-11-28-alter-carrito-fk_usuario
+      author: roberto.cruz
+      changes:
+        - sql: 
+            ALTER TABLE carrito
+            ADD COLUMN fk_usuario INTEGER;
+  - changeSet:
+      id: 2025-11-28-alter-carrito-fk_usuario_relation
+      author: roberto.cruz
+      changes:
+        - sql: 
+            ALTER TABLE carrito
+            ADD CONSTRAINT fk_usuario
+            FOREIGN KEY (fk_usuario) REFERENCES usuario(id);

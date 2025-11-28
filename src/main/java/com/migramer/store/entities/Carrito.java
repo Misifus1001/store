@@ -43,6 +43,10 @@ public class Carrito {
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "fk_usuario")
+    private Usuario usuarioForCarrito;
+
     // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     // @JoinColumn(name = "fk_producto")
     // private Producto productoForCarrito;
