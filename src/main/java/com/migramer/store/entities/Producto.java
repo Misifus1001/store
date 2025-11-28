@@ -41,7 +41,7 @@ public class Producto {
     @JoinColumn(name = "fk_tienda", nullable =  true, updatable = true)
     private Tienda tiendaForProducto;
 
-    @OneToMany(mappedBy = "productoForProductoCarrito", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ProductoCarrito> productoCarritoList;
+    @OneToMany(mappedBy = "productoForCarrito", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Carrito> productoCarritoList;
     
 }

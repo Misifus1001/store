@@ -26,13 +26,13 @@ public class ProductoCarrito {
     private Integer cantidad;
     private Boolean estatus;
 
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "fk_carrito")
-    private Carrito carritoForProductoCarrito;
+    // @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY, optional = true)
+    // @JoinColumn(name = "fk_carrito")
+    // private Carrito carritoForProductoCarrito;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "fk_producto")
-    private Producto productoForProductoCarrito;
+    // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    // @JoinColumn(name = "fk_producto")
+    // private Producto productoForProductoCarrito;
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;

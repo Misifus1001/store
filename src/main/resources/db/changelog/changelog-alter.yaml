@@ -13,3 +13,40 @@ databaseChangeLog:
         - sql:
             ALTER TABLE usuario
             ALTER COLUMN fk_tienda DROP NOT NULL;
+  - changeSet:
+      id: 2025-11-26-alter-carrito-fk_producto
+      author: roberto.cruz
+      changes:
+        - sql: 
+            ALTER TABLE carrito
+            ADD COLUMN fk_producto INTEGER NOT NULL;
+  - changeSet:
+      id: 2025-11-27-alter-carrito-fkProducto
+      author: roberto.cruz
+      changes:
+        - sql: 
+            ALTER TABLE carrito
+            ADD CONSTRAINT fk_producto
+            FOREIGN KEY (fk_producto) REFERENCES producto(id);
+
+  - changeSet:
+      id: 2025-11-48-alter-carrito-cantidad
+      author: roberto.cruz
+      changes:
+        - sql: 
+            ALTER TABLE carrito
+            ADD COLUMN cantidad INTEGER NOT NULL;
+  - changeSet:
+      id: 2025-11-28-alter-carrito-etapa
+      author: roberto.cruz
+      changes:
+        - sql:
+            ALTER TABLE carrito
+            ALTER COLUMN fk_etapa DROP NOT NULL;
+  - changeSet:
+      id: 2025-11-28-alter-carrito-venta
+      author: roberto.cruz
+      changes:
+        - sql:
+            ALTER TABLE carrito
+            ALTER COLUMN fk_venta DROP NOT NULL;
