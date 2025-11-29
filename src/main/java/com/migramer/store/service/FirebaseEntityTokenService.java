@@ -1,6 +1,7 @@
 package com.migramer.store.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,10 @@ public class FirebaseEntityTokenService {
             firebaseEntityTokenRepository.save(firebaseEntityToken);
         }
 
+    }
+
+    public List<FirebaseEntityToken> getFirebaseEntityTokenList(){
+        return firebaseEntityTokenRepository.findAllByActivo(true);
     }
 
 }
