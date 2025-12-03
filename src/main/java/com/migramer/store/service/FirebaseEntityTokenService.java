@@ -50,21 +50,24 @@ public class FirebaseEntityTokenService {
         Optional<FirebaseEntityToken> firebaseEntityTokenOptional = firebaseEntityTokenRepository
                 .findTop1ByUsuarioToken(usuario);
 
+        FirebaseEntityToken firebaseEntityToken;
         if (firebaseEntityTokenOptional.isEmpty()) {
 
-            FirebaseEntityToken firebaseEntityToken = new FirebaseEntityToken();
-
-            firebaseEntityToken.setFechaCreacion(LocalDateTime.now());
-            firebaseEntityToken.setActivo(true);
-            firebaseEntityToken.setToken(token);
-            firebaseEntityToken.setUsuarioToken(usuario);
-
-            firebaseEntityTokenRepository.save(firebaseEntityToken);
+            firebaseEntityToken = new FirebaseEntityToken();
+        } else {
+            firebaseEntityToken = firebaseEntityTokenOptional.get();
         }
+
+        firebaseEntityToken.setFechaCreacion(LocalDateTime.now());
+        firebaseEntityToken.setActivo(true);
+        firebaseEntityToken.setToken(token);
+        firebaseEntityToken.setUsuarioToken(usuario);
+
+        firebaseEntityTokenRepository.save(firebaseEntityToken);
 
     }
 
-    public List<FirebaseEntityToken> getFirebaseEntityTokenList(){
+    public List<FirebaseEntityToken> getFirebaseEntityTokenList() {
         return firebaseEntityTokenRepository.findAllByActivo(true);
     }
 

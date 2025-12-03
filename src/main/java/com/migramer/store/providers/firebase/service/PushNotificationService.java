@@ -22,7 +22,7 @@ public class PushNotificationService {
     @Autowired
     private FirebaseEntityTokenService firebaseEntityTokenService;
 
-    private final Boolean envioActivado = false;
+    private final Boolean envioActivado = true;
     private final Logger logger = LoggerFactory.getLogger(PushNotificationService.class);
 
     public PushNotificationResponse sendToDevice(PushNotificationRequest pushNotificationRequest) {
@@ -71,8 +71,8 @@ public class PushNotificationService {
 
         List<PushNotificationRequest> pushNotificationRequestList = new ArrayList<>();
 
-        String title = "";
-        String body = "";
+        String title = "Hola desde spring boot";
+        String body = "Esta es una prueba de push notifications";
 
         for (FirebaseEntityToken firebaseEntityToken : firebaseEntityTokenList) {
 

@@ -13,7 +13,7 @@ public class SchedulerService {
     private PushNotificationService pushNotificationService;
 
     // @Scheduled(cron = "0 45 8 1/15 * ?")
-    @Scheduled(cron = "0 05 18 * * *")
+    @Scheduled(cron = "40 25 16 * * *")
     public void pushNotification(){
         pushNotificationService.enviarPushNotifications();
     }
