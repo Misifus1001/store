@@ -1,5 +1,5 @@
 # ============================
-# 1) Build Stage (Maven + JDK 17)
+# 1) Build Stage
 # ============================
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 
@@ -11,24 +11,21 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # ============================
-# 2) Run Stage (JRE 17)
+# 2) Run Stage
 # ============================
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Crear carpeta para uploads
+# Crear carpeta de uploads
 RUN mkdir -p /app/uploads/images
 
-# Copiar jar generado
+# Copiar el jar
 COPY --from=build /app/target/*.jar app.jar
 
-# Hacer la carpeta accesible
+# Montar volumen (opcional pero recomendado)
 VOLUME ["/app/uploads"]
 
 EXPOSE 8080
-
-# Permitir variables desde Render
-ENV SPRING_PROFILES_ACTIVE=prod
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
