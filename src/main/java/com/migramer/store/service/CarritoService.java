@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +18,9 @@ import com.migramer.store.entities.Producto;
 import com.migramer.store.entities.Tienda;
 import com.migramer.store.entities.Usuario;
 import com.migramer.store.models.AddToCarritoRequest;
+import com.migramer.store.models.CarritoDto;
 import com.migramer.store.models.MessageResponse;
+import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.repository.CarritoRepository;
 
 import jakarta.transaction.Transactional;
@@ -32,6 +37,10 @@ public class CarritoService {
     @Autowired
     private TiendaService tiendaService;
 
+
+    @Autowired
+    private UsuarioService usuarioService;
+    
     @Autowired
     @Lazy
     private CarritoService self;
@@ -67,8 +76,63 @@ public class CarritoService {
 
     }
 
+    public PaginacionResponse getCarritoComprasByUser(String email, Integer page, Integer size) {
+
+        try {
+
+            Usuario usuario = usuarioService.getUsuarioByEmail(email);
+
+            PaginacionResponse paginacionResponse = new PaginacionResponse();
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<Carrito> carritoPageList = carritoRepository.findAllByUsuarioForCarrito(usuario, pageable);
+
+            Page<CarritoDto> carritoDtoPage = productoPageProductoDtoPage(carritoPageList);
+
+            paginacionResponse.setItems(carritoDtoPage.getContent());
+            paginacionResponse.setTotalItems(carritoDtoPage.getTotalElements());
+            paginacionResponse.setTotalPages(carritoDtoPage.getTotalPages());
+            paginacionResponse.setCurrentPage(carritoDtoPage.getNumber());
+            paginacionResponse.setPreviousPage(
+                    carritoDtoPage.getNumber() > 0 ? carritoDtoPage.getNumber() - 1 : carritoDtoPage.getNumber());
+            paginacionResponse.setNextPage(
+                    carritoDtoPage.getNumber() + 1 < carritoDtoPage.getTotalPages() ? carritoDtoPage.getNumber() + 1
+                            : carritoDtoPage.getNumber());
+
+            return paginacionResponse;
+        } catch (Exception e) {
+            logger.error("Ocurrió un error: {}", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     public Optional<Carrito> findByProductoForCarritoAndUsuarioForCarrito(Producto producto, Usuario usuario) {
         return carritoRepository.findTop1ByProductoForCarritoAndUsuarioForCarrito(producto, usuario);
+    }
+    
+    private Page<CarritoDto> productoPageProductoDtoPage(Page<Carrito> carritoPage) {
+        return carritoPage.map(carrito -> carritoToCarritoDto(carrito));
+    }
+
+    private CarritoDto carritoToCarritoDto(Carrito carrito){
+        CarritoDto carritoDto = new CarritoDto();
+
+        Producto producto = carrito.getProductoForCarrito();
+        carritoDto.setId(carrito.getId());
+        carritoDto.setCantidad(carrito.getCantidad());
+        carritoDto.setCodigoBarras(producto.getCodigoBarras());
+        carritoDto.setDescripcion(producto.getDescripcion());
+        carritoDto.setPrecio(producto.getPrecio());
+        carritoDto.setStock(producto.getStock());
+        carritoDto.setUrlImagen(buildURL(producto.getUrlImagen()));
+        return carritoDto;
+
+    }
+    private String buildURL(String baseURL) {
+        String url = "https://unkneaded-deepeningly-sandra.ngrok-free.dev" + "/products/images/" + baseURL;
+        // String url = "http://localhost:8080" + "/products/images/" + baseURL;
+        return url;
     }
 
     @Transactional
