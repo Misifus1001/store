@@ -139,7 +139,7 @@ public class ProductosService {
 
             Page<ProductoDto> productoDtoPage = productoPageProductoDtoPage(productoPageList);
 
-            paginacionResponse.setItems(productoDtoPage.getContent());
+            paginacionResponse.setData(productoDtoPage.getContent());
             paginacionResponse.setTotalItems(productoDtoPage.getTotalElements());
             paginacionResponse.setTotalPages(productoDtoPage.getTotalPages());
             paginacionResponse.setCurrentPage(productoDtoPage.getNumber());

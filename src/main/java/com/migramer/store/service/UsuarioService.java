@@ -147,7 +147,7 @@ public class UsuarioService {
 
             Page<UsuarioDto> usuarioDtoPage = usuarioPageToUsuarioDtoPage(usuarioPage);
 
-            paginacionResponse.setItems(usuarioDtoPage.getContent());
+            paginacionResponse.setData(usuarioDtoPage.getContent());
             paginacionResponse.setTotalItems(usuarioDtoPage.getTotalElements());
             paginacionResponse.setTotalPages(usuarioDtoPage.getTotalPages());
             paginacionResponse.setCurrentPage(usuarioDtoPage.getNumber());

@@ -57,7 +57,7 @@ public class TiendaService {
 
             Page<TiendaDto> tiendaDtoPage = tiendaPageToTiendaDtoPage(tiendaPageList);
 
-            paginacionResponse.setItems(tiendaDtoPage.getContent());
+            paginacionResponse.setData(tiendaDtoPage.getContent());
             paginacionResponse.setTotalItems(tiendaDtoPage.getTotalElements());
             paginacionResponse.setTotalPages(tiendaDtoPage.getTotalPages());
             paginacionResponse.setCurrentPage(tiendaDtoPage.getNumber());

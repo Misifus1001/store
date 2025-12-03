@@ -1,5 +1,7 @@
 package com.migramer.store.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -19,6 +21,8 @@ import com.migramer.store.entities.Tienda;
 import com.migramer.store.entities.Usuario;
 import com.migramer.store.models.AddToCarritoRequest;
 import com.migramer.store.models.CarritoDto;
+import com.migramer.store.models.CarritoInfoDto;
+import com.migramer.store.models.Info;
 import com.migramer.store.models.MessageResponse;
 import com.migramer.store.models.PaginacionResponse;
 import com.migramer.store.repository.CarritoRepository;
@@ -36,7 +40,6 @@ public class CarritoService {
 
     @Autowired
     private TiendaService tiendaService;
-
 
     @Autowired
     private UsuarioService usuarioService;
@@ -90,7 +93,14 @@ public class CarritoService {
 
             Page<CarritoDto> carritoDtoPage = productoPageProductoDtoPage(carritoPageList);
 
-            paginacionResponse.setItems(carritoDtoPage.getContent());
+            CarritoInfoDto carritoInfoDto = new CarritoInfoDto();
+
+            Info info = new Info();
+            info.setTotalPagar(new BigDecimal(12312.90).setScale(2,RoundingMode.HALF_UP));
+            carritoInfoDto.setInfo(info);
+            carritoInfoDto.setItems(carritoDtoPage.getContent());
+
+            paginacionResponse.setData(carritoInfoDto);
             paginacionResponse.setTotalItems(carritoDtoPage.getTotalElements());
             paginacionResponse.setTotalPages(carritoDtoPage.getTotalPages());
             paginacionResponse.setCurrentPage(carritoDtoPage.getNumber());

@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class PaginacionResponse {
 
-    private Object items;
+    private Object data;
     private Integer currentPage;
     private Integer nextPage;
     private Integer previousPage;
