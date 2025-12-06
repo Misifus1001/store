@@ -4,9 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import com.migramer.store.providers.emailprovider.html.HtmlBody;
 import com.migramer.store.providers.emailprovider.models.EmailRequest;
@@ -29,36 +35,84 @@ public class EmailProvider {
     private HtmlBody htmlBody;
 
     public EmailResponse sendEmail(EmailRequest emailRequest, TypeHtmlBody typeHtmlBody) {
-        executeSendSimpleEmail(
-                emailRequest.getEmailTo(),
-                emailRequest.getSubject(),
-                emailRequest.getMessage(),
-                typeHtmlBody);
+        // executeSendSimpleEmail(
+        // emailRequest.getEmailTo(),
+        // emailRequest.getSubject(),
+        // emailRequest.getMessage(),
+        // typeHtmlBody);
+        llamarProveedorEmail(emailRequest);
         return new EmailResponse("Mensaje enviado correctamente");
+    }
+
+    public void llamarProveedorEmail(EmailRequest emailRequest) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<EmailRequest> requestEntity = new HttpEntity<>(emailRequest, headers);
+
+        Integer contador = 3;
+
+        ResponseEntity<Object> response = null;
+
+        do {
+
+            try {
+
+                if (response != null) {
+                    break;
+                }
+
+                Thread.sleep(1000);
+
+                response = new RestTemplate().exchange(
+                        "https://unmistrustful-ununited-viva.ngrok-free.dev/providers/send-email",
+                        HttpMethod.POST,
+                        requestEntity,
+                        Object.class);
+            } catch (Exception e) {
+                log.error("ERROR: ", e);
+                contador++;
+                response = null;
+            }
+
+        } while (contador >= 0);
+
     }
 
     public void executeSendSimpleEmail(String to, String subject, String text, TypeHtmlBody typeHtmlBody) {
 
-        try {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        // HttpHeaders headers = new HttpHeaders();
+        // headers.setContentType(MediaType.APPLICATION_JSON);
 
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        // HttpEntity<Object> requestEntity = new HttpEntity<>(null, headers);
 
-            helper.setTo(to);
-            helper.setSubject(subject);
+        // ResponseEntity<Object> response = new RestTemplate().exchange(
+        //         "https://unmistrustful-ununited-viva.ngrok-free.dev",
+        //         HttpMethod.POST,
+        //         requestEntity,
+        //         Object.class);
 
-            String htmlContent = htmlBody.getHTMLBody(text, typeHtmlBody);
-            helper.setText(htmlContent, true);
+        // try {
+        // MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
-            helper.addInline("logoImage", getLogoImage("logo_loopers_name.jpeg"));
+        // MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            javaMailSender.send(mimeMessage);
+        // helper.setTo(to);
+        // helper.setSubject(subject);
 
-            log.info("Correo enviado correctamente a {}", to);
-        } catch (MessagingException e) {
-            log.error("Error al enviar correo: ", e);
-            throw new RuntimeException("Error al enviar correo", e);
-        }
+        // String htmlContent = htmlBody.getHTMLBody(text, typeHtmlBody);
+        // helper.setText(htmlContent, true);
+
+        // helper.addInline("logoImage", getLogoImage("logo_loopers_name.jpeg"));
+
+        // javaMailSender.send(mimeMessage);
+
+        // log.info("Correo enviado correctamente a {}", to);
+        // } catch (MessagingException e) {
+        // log.error("Error al enviar correo: ", e);
+        // throw new RuntimeException("Error al enviar correo", e);
+        // }
 
     }
 

@@ -179,7 +179,7 @@ public class ProductosService {
     }
 
     private String buildURL(String baseURL) {
-        String url = "https://unkneaded-deepeningly-sandra.ngrok-free.dev" + "/products/images/" + baseURL;
+        String url = "https://store-1-9jzc.onrender.com" + "/products/images/" + baseURL;
         // String url = "http://localhost:8080" + "/products/images/" + baseURL;
         return url;
     }

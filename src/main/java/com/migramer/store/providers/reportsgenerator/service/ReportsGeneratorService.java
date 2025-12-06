@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.migramer.store.providers.reportsgenerator.components.JasperGeneratorService;
 import com.migramer.store.providers.reportsgenerator.model.FileToGenerate;
 import com.migramer.store.providers.reportsgenerator.model.JasperFillType;
+import com.migramer.store.providers.reportsgenerator.model.ReporteVentasResponse;
 import com.migramer.store.providers.reportsgenerator.model.RequestReporteVentas;
 import com.migramer.store.providers.reportsgenerator.model.ResponseReport;
 import com.migramer.store.providers.reportsgenerator.model.TypeReport;
@@ -23,6 +24,14 @@ public class ReportsGeneratorService {
     private final String nombreCarpeta = "store";
 
     private final Logger logger = LoggerFactory.getLogger(ReportsGeneratorService.class);
+
+    public ReporteVentasResponse getReporte(){
+
+        ReporteVentasResponse reporteVentasResponse = new ReporteVentasResponse();
+
+        // String base64 
+        return reporteVentasResponse;
+    }
 
     public ResponseReport generarArchivoReporteVentas(RequestReporteVentas reporteVentas) {
 
