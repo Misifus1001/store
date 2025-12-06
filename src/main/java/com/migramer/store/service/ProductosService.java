@@ -50,7 +50,7 @@ public class ProductosService {
     public ProductoDto saveProductoDto(ProductoDto productoDto, String uuidTienda) {
         Tienda tienda = tiendaService.getTiendaEntityByUUID(uuidTienda);
 
-        validarProductoExistente(productoDto.getCodigoBarras(),true, tienda);
+        validarProductoExistente(productoDto.getCodigoBarras(), true, tienda);
 
         String uuidName = UUID.randomUUID().toString() + ".jpeg";
         productoDto.setUrlImagen(uuidName);
@@ -85,22 +85,23 @@ public class ProductosService {
 
         Tienda tienda = tiendaService.getTiendaEntityByUUID(uuidTienda);
 
-        Producto productoFind = findByCodigoBarrasAndEstatusAndTiendaForProducto(barcode,true, tienda);
+        Producto productoFind = findByCodigoBarrasAndEstatusAndTiendaForProducto(barcode, true, tienda);
 
         ProductoDto productoDto = productoToProductoDto(productoFind);
 
         return productoDto;
     }
 
-    public Producto findByCodigoBarrasAndEstatusAndTiendaForProducto(String barcode,Boolean estatus, Tienda tienda) {
-        return productoRepository.findTop1ByCodigoBarrasAndEstatusAndTiendaForProducto(barcode,estatus, tienda)
+    public Producto findByCodigoBarrasAndEstatusAndTiendaForProducto(String barcode, Boolean estatus, Tienda tienda) {
+        return productoRepository.findTop1ByCodigoBarrasAndEstatusAndTiendaForProducto(barcode, estatus, tienda)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", barcode));
     }
-    
 
-    private void validarProductoExistente(String barcode,Boolean estatus, Tienda tienda){
+    private void validarProductoExistente(String barcode, Boolean estatus, Tienda tienda) {
 
-        Producto producto = findByCodigoBarrasAndEstatusAndTiendaForProducto(barcode, estatus, tienda);
+        Producto producto = productoRepository
+                .findTop1ByCodigoBarrasAndEstatusAndTiendaForProducto(barcode, estatus, tienda)
+                .orElseThrow(null);
 
         if (producto != null) {
             throw new BusinessException("Ya existe un producto con ese código de barras");
@@ -157,7 +158,7 @@ public class ProductosService {
         }
     }
 
-    public List<Producto> productosConMenorStock(Tienda tienda, Boolean estatus){
+    public List<Producto> productosConMenorStock(Tienda tienda, Boolean estatus) {
         return productoRepository.findTop5ByTiendaForProductoAndEstatus(tienda, estatus);
     }
 
