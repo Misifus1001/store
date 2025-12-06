@@ -24,7 +24,7 @@ RUN mkdir -p /app/uploads/images
 COPY --from=build /app/target/*.jar app.jar
 
 # Montar volumen (opcional pero recomendado)
-VOLUME ["/app/uploads/images"]
+# VOLUME ["/app/uploads/images"]
 
 EXPOSE 8080
 

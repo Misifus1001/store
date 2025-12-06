@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UploadImageComponent {
 
-    private final String UPLOAD_DIR = "uploads/images/";
+    private final String UPLOAD_DIR = "/app/uploads/images/";
 
     private final Logger logger = LoggerFactory.getLogger(UploadImageComponent.class);
 

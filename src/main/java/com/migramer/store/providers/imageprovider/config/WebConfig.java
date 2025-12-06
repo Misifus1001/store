@@ -10,6 +10,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/products/images/**")
-                .addResourceLocations("file:uploads/images/");
+                .addResourceLocations("file:/app/uploads/images/");
     }
 }
