@@ -72,7 +72,7 @@ public class EmailProvider {
                         Object.class);
             } catch (Exception e) {
                 log.error("ERROR: ", e);
-                contador++;
+                contador--;
                 response = null;
             }
 

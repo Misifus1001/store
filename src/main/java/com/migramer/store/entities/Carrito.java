@@ -36,7 +36,7 @@ public class Carrito {
     @JoinColumn(name = "fk_venta", referencedColumnName = "id")
     private Ventas ventasForCarrito;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "fk_producto")
     private Producto productoForCarrito;
 

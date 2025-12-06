@@ -3,6 +3,7 @@ package com.migramer.store.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -101,7 +102,7 @@ public class CarritoService {
             if (totalPagar == null){
                 totalPagar = BigDecimal.ZERO;
             }
-            
+
             info.setTotalPagar(totalPagar.setScale(2, RoundingMode.HALF_UP));
 
             carritoInfoDto.setInfo(info);
@@ -146,9 +147,20 @@ public class CarritoService {
         return carritoDto;
 
     }
+    
+    public void eliminarCarritoProductoList(List<Carrito> carritoList){
+        for (Carrito carrito : carritoList) {
+            eliminarProductoCarrito(carrito.getId());
+        }
+    }
+
+    @Transactional
+    public void eliminarProductoCarrito(Integer id){
+        carritoRepository.deleteById(id);
+    }
 
     private String buildURL(String baseURL) {
-        String url = "https://unkneaded-deepeningly-sandra.ngrok-free.dev" + "/products/images/" + baseURL;
+        String url = "https://store-1-9jzc.onrender.com" + "/products/images/" + baseURL;
         // String url = "http://localhost:8080" + "/products/images/" + baseURL;
         return url;
     }

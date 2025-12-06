@@ -65,3 +65,10 @@ databaseChangeLog:
             ALTER TABLE carrito
             ADD CONSTRAINT fk_usuario
             FOREIGN KEY (fk_usuario) REFERENCES usuario(id);
+  - changeSet:
+      id: 2025-07-05-alter-ventas
+      author: roberto.cruz
+      changes:
+        - sql:
+            ALTER TABLE ventas
+            ALTER COLUMN fk_carrito DROP NOT NULL;

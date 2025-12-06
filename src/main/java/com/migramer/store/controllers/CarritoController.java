@@ -34,14 +34,6 @@ public class CarritoController {
     
     }
 
-    @PostMapping("/finalizar-venta")
-    public ResponseEntity<MessageResponse> finalizarVenta(
-            @Valid @RequestBody AddToCarritoRequest addToCarritoRequest,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        MessageResponse messageResponse = carritoService.addProductToShoppingCart(addToCarritoRequest,userDetails.getUsuario(), userDetails.getUuidTienda());
-        return ResponseEntity.ok(messageResponse);
-    }
-
     @GetMapping
     public PaginacionResponse getCarritoCompras(
         @RequestParam(required = false, defaultValue = "0") Integer page,

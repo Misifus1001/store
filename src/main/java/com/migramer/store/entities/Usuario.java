@@ -38,7 +38,7 @@ public class Usuario {
     @JoinColumn(name = "fk_tienda", nullable = true)
     private Tienda tienda;
 
-    @OneToMany(mappedBy = "usuarioForCarrito", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "usuarioForCarrito", fetch = FetchType.EAGER)
     private List<Carrito> carritoList;
 
     @OneToOne(mappedBy = "usuarioToken")
