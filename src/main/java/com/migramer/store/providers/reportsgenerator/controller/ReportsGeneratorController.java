@@ -8,19 +8,19 @@ import com.migramer.store.providers.reportsgenerator.service.ReportsGeneratorSer
 
 import org.springframework.web.bind.annotation.GetMapping;
 
-@RestController
-@RequestMapping("/ventas")
-public class ReportsGeneratorController {
+// @RestController
+// @RequestMapping("/ventas")
+// public class ReportsGeneratorController {
 
-    private final ReportsGeneratorService reportsGeneratorService;
+//     private final ReportsGeneratorService reportsGeneratorService;
 
-    public ReportsGeneratorController(ReportsGeneratorService reportsGeneratorService){
-        this.reportsGeneratorService = reportsGeneratorService;
-    }
+//     public ReportsGeneratorController(ReportsGeneratorService reportsGeneratorService){
+//         this.reportsGeneratorService = reportsGeneratorService;
+//     }
 
-    @GetMapping
-    public ReporteVentasResponse getReporteVentas() {
-        return null;
-    }
+//     @GetMapping
+//     public ReporteVentasResponse getReporteVentas() {
+//         return null;
+//     }
     
-}
+// }

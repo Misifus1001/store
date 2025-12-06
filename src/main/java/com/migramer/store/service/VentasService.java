@@ -17,6 +17,9 @@ import com.migramer.store.entities.Producto;
 import com.migramer.store.entities.Usuario;
 import com.migramer.store.entities.Ventas;
 import com.migramer.store.models.MessageResponse;
+import com.migramer.store.providers.reportsgenerator.model.RequestReporteVentas;
+import com.migramer.store.providers.reportsgenerator.model.ResponseReport;
+import com.migramer.store.providers.reportsgenerator.service.ReportsGeneratorService;
 import com.migramer.store.repository.VentasRepository;
 
 import jakarta.transaction.Transactional;
@@ -36,6 +39,9 @@ public class VentasService {
 
     @Autowired
     private CarritoService carritoService;
+
+    @Autowired
+    private ReportsGeneratorService reportsGeneratorService;
 
     private final Logger logger = LoggerFactory.getLogger(VentasService.class);
 
@@ -87,5 +93,13 @@ public class VentasService {
         ventas.setTotalPagado(totalPagado);
         ventasRepository.save(ventas);
     }
+
+    public ResponseReport getReporteVentas(){
+
+        RequestReporteVentas reporteVentas = new RequestReporteVentas();
+        reporteVentas.setMyProperti("askld");
+        reporteVentas.setNombreArchivo("akjsdjkds");
+        return reportsGeneratorService.generarArchivoReporteVentas(reporteVentas);
+    } 
 
 }
