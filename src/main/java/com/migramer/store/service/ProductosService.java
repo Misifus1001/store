@@ -1,6 +1,7 @@
 package com.migramer.store.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -154,6 +155,10 @@ public class ProductosService {
             logger.error("Ocurrió un error: {}", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public List<Producto> productosConMenorStock(Tienda tienda, Boolean estatus){
+        return productoRepository.findTop5ByTiendaForProductoAndEstatus(tienda, estatus);
     }
 
     private ProductoDto productoToProductoDto(Producto producto) {

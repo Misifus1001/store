@@ -12,15 +12,20 @@ import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.migramer.store.entities.FirebaseEntityToken;
+import com.migramer.store.entities.Producto;
 import com.migramer.store.providers.firebase.model.PushNotificationRequest;
 import com.migramer.store.providers.firebase.model.PushNotificationResponse;
 import com.migramer.store.service.FirebaseEntityTokenService;
+import com.migramer.store.service.ProductosService;
 
 @Service
 public class PushNotificationService {
 
     @Autowired
     private FirebaseEntityTokenService firebaseEntityTokenService;
+
+    @Autowired
+    private ProductosService productosService;
 
     private final Boolean envioActivado = true;
     private final Logger logger = LoggerFactory.getLogger(PushNotificationService.class);
@@ -57,10 +62,14 @@ public class PushNotificationService {
             List<PushNotificationRequest> pushNotificationRequestList = getPushNotificationRequests(
                     firebaseEntityTokenList);
 
-            for (PushNotificationRequest pushNotificationRequest : pushNotificationRequestList) {
-                sendToDevice(pushNotificationRequest);
+            if (!pushNotificationRequestList.isEmpty()) {
+
+                for (PushNotificationRequest pushNotificationRequest : pushNotificationRequestList) {
+                    sendToDevice(pushNotificationRequest);
+                }
             }
-        }else{
+
+        } else {
             logger.info("ENVÍO DE NOTIFICACIONES DESACTIVADO");
         }
 
@@ -71,15 +80,31 @@ public class PushNotificationService {
 
         List<PushNotificationRequest> pushNotificationRequestList = new ArrayList<>();
 
-        String title = "Hola desde spring boot";
-        String body = "Esta es una prueba de push notifications";
-
         for (FirebaseEntityToken firebaseEntityToken : firebaseEntityTokenList) {
 
+            String title = "Scokee notification";
+            String body = "";
+
             PushNotificationRequest pushNotificationRequest = new PushNotificationRequest();
-            pushNotificationRequest.setTitle(title);
-            pushNotificationRequest.setToken(firebaseEntityToken.getToken());
-            pushNotificationRequest.setBody(body);
+
+            if (!firebaseEntityToken.getUsuarioToken().getRol().getDescripcion().equals("VENDEDOR")) {
+
+                List<Producto> productoMenorStockList = productosService.productosConMenorStock(
+                        firebaseEntityToken.getUsuarioToken().getTienda(),
+                        envioActivado);
+
+                if (!productoMenorStockList.isEmpty()) {
+
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Te estás quedando sin stock, entra a tu app para ver");
+
+                    body = sb.toString().trim();
+                    pushNotificationRequest.setTitle(title);
+                    pushNotificationRequest.setToken(firebaseEntityToken.getToken());
+                    pushNotificationRequest.setBody(body);
+                }
+
+            }
 
             pushNotificationRequestList.add(pushNotificationRequest);
         }
