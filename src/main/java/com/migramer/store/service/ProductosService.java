@@ -2,6 +2,7 @@ package com.migramer.store.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -99,11 +100,10 @@ public class ProductosService {
 
     private void validarProductoExistente(String barcode, Boolean estatus, Tienda tienda) {
 
-        Producto producto = productoRepository
-                .findTop1ByCodigoBarrasAndEstatusAndTiendaForProducto(barcode, estatus, tienda)
-                .orElseThrow(null);
+        Optional<Producto> producto = productoRepository
+                .findTop1ByCodigoBarrasAndEstatusAndTiendaForProducto(barcode, estatus, tienda);
 
-        if (producto != null) {
+        if (producto.isPresent()) {
             throw new BusinessException("Ya existe un producto con ese código de barras");
         }
 
