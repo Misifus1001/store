@@ -43,7 +43,7 @@ public class CarritoService {
 
     @Autowired
     private UsuarioService usuarioService;
-    
+
     @Autowired
     @Lazy
     private CarritoService self;
@@ -96,7 +96,14 @@ public class CarritoService {
             CarritoInfoDto carritoInfoDto = new CarritoInfoDto();
 
             Info info = new Info();
-            info.setTotalPagar(new BigDecimal(12312.90).setScale(2,RoundingMode.HALF_UP));
+            BigDecimal totalPagar = carritoRepository.getTotalPagarByUsuario(usuario);
+
+            if (totalPagar == null){
+                totalPagar = BigDecimal.ZERO;
+            }
+            
+            info.setTotalPagar(totalPagar.setScale(2, RoundingMode.HALF_UP));
+
             carritoInfoDto.setInfo(info);
             carritoInfoDto.setItems(carritoDtoPage.getContent());
 
@@ -120,12 +127,12 @@ public class CarritoService {
     public Optional<Carrito> findByProductoForCarritoAndUsuarioForCarrito(Producto producto, Usuario usuario) {
         return carritoRepository.findTop1ByProductoForCarritoAndUsuarioForCarrito(producto, usuario);
     }
-    
+
     private Page<CarritoDto> productoPageProductoDtoPage(Page<Carrito> carritoPage) {
         return carritoPage.map(carrito -> carritoToCarritoDto(carrito));
     }
 
-    private CarritoDto carritoToCarritoDto(Carrito carrito){
+    private CarritoDto carritoToCarritoDto(Carrito carrito) {
         CarritoDto carritoDto = new CarritoDto();
 
         Producto producto = carrito.getProductoForCarrito();
@@ -139,6 +146,7 @@ public class CarritoService {
         return carritoDto;
 
     }
+
     private String buildURL(String baseURL) {
         String url = "https://unkneaded-deepeningly-sandra.ngrok-free.dev" + "/products/images/" + baseURL;
         // String url = "http://localhost:8080" + "/products/images/" + baseURL;
