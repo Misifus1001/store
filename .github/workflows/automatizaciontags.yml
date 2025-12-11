@@ -1,0 +1,25 @@
+name: Auto Tag by Date
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate date tag
+        id: date_tag
+        run: |
+          tag=$(date +"%d%m%Y")
+          echo "new_tag=$tag" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git tag ${{ steps.date_tag.outputs.new_tag }}
+          git push origin ${{ steps.date_tag.outputs.new_tag }}

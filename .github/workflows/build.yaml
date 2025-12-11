@@ -62,56 +62,56 @@
 #           --task-definition $ECS_TASK_FAMILY \
 #           --force-new-deployment
 
-name: Push the Docker image to AWS ECR Repo
-on:
-  push:
-    branches:
-      # - dev
-      - qa
-      # - prod
-jobs:
-  Build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Get branch name
-        id: vars
-        run: echo ::set-output name=stage::${GITHUB_REF#refs/*/}
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ steps.vars.outputs.stage == 'PROD' && secrets.AWS_ACCESS_KEY_ID_PROD || secrets.AWS_ACCESS_KEY_ID_DEV_QA }}
-          aws-secret-access-key: ${{ steps.vars.outputs.stage == 'PROD' && secrets.AWS_SECRET_ACCESS_KEY_PROD || secrets.AWS_SECRET_ACCESS_KEY_DEV_QA }}
-          aws-region: us-east-1
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-      - name: Generate Image name
-        id: get-ecr-image-name
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_NAME: store-repository
-          IMAGE_TAG: ${{ github.sha }}
-        run: echo "::set-output name=ecr-image-name::$ECR_REGISTRY/$ECR_REPOSITORY_NAME:$IMAGE_TAG"
-      - name: Build, tag, and push the image to Amazon ECR
-        id: build-image
-        env:
-          ECR_IMAGE_NAME: ${{ steps.get-ecr-image-name.outputs.ecr-image-name }}
-        run: |
-          docker build -t $ECR_IMAGE_NAME .
-          docker push $ECR_IMAGE_NAME
-      - name: Render Amazon ECS task definition
-        id: ecs-cd-starter-container
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition/${{steps.vars.outputs.stage}}.json
-          container-name: ${{ github.event.repository.name }}-${{steps.vars.outputs.stage}}
-          image: ${{ steps.get-ecr-image-name.outputs.ecr-image-name }}
-      - name: Deploy to Amazon ECS service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.ecs-cd-starter-container.outputs.task-definition }}
-          service: ${{ github.event.repository.name }}-${{steps.vars.outputs.stage}}
-          cluster: mk-${{steps.vars.outputs.stage}}
+# name: Push the Docker image to AWS ECR Repo
+# on:
+#   push:
+#     branches:
+#       # - dev
+#       - qa
+#       # - prod
+# jobs:
+#   Build:
+#     name: Build
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       - name: Get branch name
+#         id: vars
+#         run: echo ::set-output name=stage::${GITHUB_REF#refs/*/}
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ steps.vars.outputs.stage == 'PROD' && secrets.AWS_ACCESS_KEY_ID_PROD || secrets.AWS_ACCESS_KEY_ID_DEV_QA }}
+#           aws-secret-access-key: ${{ steps.vars.outputs.stage == 'PROD' && secrets.AWS_SECRET_ACCESS_KEY_PROD || secrets.AWS_SECRET_ACCESS_KEY_DEV_QA }}
+#           aws-region: us-east-1
+#       - name: Login to Amazon ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v1
+#       - name: Generate Image name
+#         id: get-ecr-image-name
+#         env:
+#           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#           ECR_REPOSITORY_NAME: store-repository
+#           IMAGE_TAG: ${{ github.sha }}
+#         run: echo "::set-output name=ecr-image-name::$ECR_REGISTRY/$ECR_REPOSITORY_NAME:$IMAGE_TAG"
+#       - name: Build, tag, and push the image to Amazon ECR
+#         id: build-image
+#         env:
+#           ECR_IMAGE_NAME: ${{ steps.get-ecr-image-name.outputs.ecr-image-name }}
+#         run: |
+#           docker build -t $ECR_IMAGE_NAME .
+#           docker push $ECR_IMAGE_NAME
+#       - name: Render Amazon ECS task definition
+#         id: ecs-cd-starter-container
+#         uses: aws-actions/amazon-ecs-render-task-definition@v1
+#         with:
+#           task-definition: task-definition/${{steps.vars.outputs.stage}}.json
+#           container-name: ${{ github.event.repository.name }}-${{steps.vars.outputs.stage}}
+#           image: ${{ steps.get-ecr-image-name.outputs.ecr-image-name }}
+#       - name: Deploy to Amazon ECS service
+#         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#         with:
+#           task-definition: ${{ steps.ecs-cd-starter-container.outputs.task-definition }}
+#           service: ${{ github.event.repository.name }}-${{steps.vars.outputs.stage}}
+#           cluster: mk-${{steps.vars.outputs.stage}}
